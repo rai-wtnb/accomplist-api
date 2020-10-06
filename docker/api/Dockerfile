@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.15.2
 
 RUN mkdir -p $GOPATH/src/github.com/rai-wtnb/accomplist-api/
 
