@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"github.com/rai-wtnb/accomplist-api/db"
+	"github.com/rai-wtnb/accomplist-api/server"
+)
 
 func main() {
-	fmt.Println("scaffold")
+	db.Init()
+	server.Init()
+	db.Close()
 }
