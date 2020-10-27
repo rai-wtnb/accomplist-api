@@ -2,6 +2,8 @@ package repository
 
 import (
 	"github.com/gin-gonic/gin"
+
+	"github.com/rai-wtnb/accomplist-api/crypto"
 	"github.com/rai-wtnb/accomplist-api/db"
 	"github.com/rai-wtnb/accomplist-api/models"
 )
@@ -11,30 +13,39 @@ type UserRepository struct{}
 type User models.User
 
 // GetAll is gets all User. used in contorollers.Index()
-func (_ UserRepository) GetAll() ([]models.User, error) {
+func (UserRepository) GetAll() ([]models.User, error) {
 	db := db.GetDB()
 	var users []models.User
-	if err := db.Table("users").Select("name, id, email, password, twitter, description, img_path").Scan(&users).Error; err != nil {
+	if err := db.Table("users").Select("name, id, email, password, twitter, description, img").Scan(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-// CreateUser is creates User model. used in contorollers.Create()
-func (_ UserRepository) CreateUser(c *gin.Context) (User, error) {
+// CreateUser creates User model. used in contorollers.Signup()
+func (UserRepository) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var user User
 	if err := c.BindJSON(&user); err != nil {
 		return user, err
 	}
-	if err := db.Create(&user).Error; err != nil {
+	encryptedPassword := crypto.PasswordEncrypt(user.Password)
+	if err := db.Create(&User{Name: user.Name, Email: user.Email, Password: encryptedPassword}).Error; err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-// GetByID is gets a User by ID. used in contorollers.Show()
-func (_ UserRepository) GetByID(id int) (models.User, error) {
+// getByEmail is used in controllers.Login()
+func (UserRepository) GetByEmail(email string) User {
+	db := db.GetDB()
+	var user User
+	db.First(&user, "email = ?", email)
+	return user
+}
+
+// GetByID gets a User by ID. used in contorollers.Show()
+func (UserRepository) GetByID(id int) (models.User, error) {
 	db := db.GetDB()
 	var me models.User
 	if err := db.Where("id = ?", id).First(&me).Error; err != nil {
@@ -48,8 +59,8 @@ func (_ UserRepository) GetByID(id int) (models.User, error) {
 	return me, nil
 }
 
-// UpdateByID is updates a User. used in contorollers.Update()
-func (_ UserRepository) UpdateByID(id int, c *gin.Context) (models.User, error) {
+// UpdateByID updates a User. used in contorollers.Update()
+func (UserRepository) UpdateByID(id int, c *gin.Context) (models.User, error) {
 	db := db.GetDB()
 	var user models.User
 	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
@@ -64,8 +75,8 @@ func (_ UserRepository) UpdateByID(id int, c *gin.Context) (models.User, error) 
 	return user, nil
 }
 
-// DeleteByID is deletes a User by ID. used in contorollers.Delete()
-func (_ UserRepository) DeleteByID(id int) error {
+// DeleteByID deletes a User by ID. used in contorollers.Delete()
+func (UserRepository) DeleteByID(id int) error {
 	db := db.GetDB()
 	var user User
 

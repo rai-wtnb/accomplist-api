@@ -1,17 +1,19 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rai-wtnb/accomplist-api/crypto"
 	"github.com/rai-wtnb/accomplist-api/models/repository"
 )
 
 type UserController struct{}
 
 // Index : GET /users
-func (_ UserController) Index(c *gin.Context) {
+func (UserController) Index(c *gin.Context) {
 	var u repository.UserRepository
 	r, err := u.GetAll()
 	if err != nil {
@@ -22,8 +24,8 @@ func (_ UserController) Index(c *gin.Context) {
 	}
 }
 
-// Create : POST /users
-func (_ UserController) Create(c *gin.Context) {
+// Signup : POST /users/signup
+func (UserController) Signup(c *gin.Context) {
 	var u repository.UserRepository
 	r, err := u.CreateUser(c)
 	if err != nil {
@@ -34,8 +36,26 @@ func (_ UserController) Create(c *gin.Context) {
 	}
 }
 
+// Login : POST /users/login
+func (UserController) Login(c *gin.Context) {
+	var u repository.UserRepository
+	user := u.GetByEmail(c.PostForm("email"))
+
+	dbPassword := user.Password
+	formPassword := c.PostForm("password")
+
+	if err := crypto.Verify(dbPassword, formPassword); err != nil {
+		c.AbortWithStatus(400)
+		fmt.Println("ログイン失敗")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		fmt.Println("ログイン成功")
+		c.JSON(200, user)
+	}
+}
+
 // Show : GET /users/:id
-func (_ UserController) Show(c *gin.Context) {
+func (UserController) Show(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
 	idInt, _ := strconv.Atoi(id)
@@ -50,7 +70,7 @@ func (_ UserController) Show(c *gin.Context) {
 }
 
 // Update : PUT /users/:id
-func (_ UserController) Update(c *gin.Context) {
+func (UserController) Update(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
 	idInt, _ := strconv.Atoi(id)
@@ -65,7 +85,7 @@ func (_ UserController) Update(c *gin.Context) {
 }
 
 // Delete : DELETE /users/:id
-func (_ UserController) Delete(c *gin.Context) {
+func (UserController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
 	idInt, _ := strconv.Atoi(id)
@@ -74,7 +94,6 @@ func (_ UserController) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(200, gin.H{"success": "ユーザーを削除しました"})
 	return
 }

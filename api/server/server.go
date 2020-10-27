@@ -5,6 +5,7 @@ import (
 	"github.com/rai-wtnb/accomplist-api/controllers"
 )
 
+// Init starts router.
 func Init() {
 	r := router()
 	r.Run()
@@ -17,7 +18,8 @@ func router() *gin.Engine {
 	{
 		ctrl := controllers.UserController{}
 		u.GET("", ctrl.Index)
-		u.POST("", ctrl.Create)
+		u.POST("/signup", ctrl.Signup)
+		u.POST("/login", ctrl.Login)
 		u.GET("/:id", ctrl.Show)
 		u.PUT("/:id", ctrl.Update)
 		u.DELETE("/:id", ctrl.Delete)
