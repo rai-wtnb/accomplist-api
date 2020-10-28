@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/rai-wtnb/accomplist-api/crypto"
 	"github.com/rai-wtnb/accomplist-api/models/repository"
@@ -46,12 +47,22 @@ func (UserController) Login(c *gin.Context) {
 
 	if err := crypto.Verify(dbPassword, formPassword); err != nil {
 		c.AbortWithStatus(400)
-		fmt.Println("ログイン失敗")
+		log.Println("ログイン失敗")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		fmt.Println("ログイン成功")
-		c.JSON(200, user)
+		session := sessions.Default(c)
+		session.Set("loginUser", user.ID)
+		session.Save()
+		c.String(http.StatusOK, "ログイン完了")
 	}
+}
+
+// Logout : POST /users/logout
+func (UserController) Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+	c.String(http.StatusOK, "ログアウト完了")
 }
 
 // Show : GET /users/:id
