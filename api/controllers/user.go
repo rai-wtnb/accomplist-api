@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -22,6 +21,22 @@ func (UserController) Index(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(200, r)
+	}
+}
+
+// IndexID : GET /users/ids
+func IndexID(c *gin.Context) {
+	var u repository.UserRepository
+	r, err := u.GetAll()
+	ids := make([]string, 0)
+	for _, s := range r {
+		ids = append(ids, s.ID)
+	}
+	if err != nil {
+		c.AbortWithStatus(404)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(200, ids)
 	}
 }
 
@@ -69,8 +84,7 @@ func (UserController) Logout(c *gin.Context) {
 func (UserController) Show(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
-	idInt, _ := strconv.Atoi(id)
-	user, err := u.GetByID(idInt)
+	user, err := u.GetByID(id)
 
 	if err != nil {
 		c.AbortWithStatus(400)
@@ -84,8 +98,7 @@ func (UserController) Show(c *gin.Context) {
 func (UserController) Update(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
-	idInt, _ := strconv.Atoi(id)
-	r, err := u.UpdateByID(idInt, c)
+	r, err := u.UpdateByID(id, c)
 
 	if err != nil {
 		c.AbortWithStatus(404)
@@ -99,8 +112,7 @@ func (UserController) Update(c *gin.Context) {
 func (UserController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
-	idInt, _ := strconv.Atoi(id)
-	if err := u.DeleteByID(idInt); err != nil {
+	if err := u.DeleteByID(id); err != nil {
 		c.AbortWithStatus(403)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

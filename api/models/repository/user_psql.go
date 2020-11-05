@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/rai-wtnb/accomplist-api/crypto"
@@ -16,9 +18,10 @@ type User models.User
 func (UserRepository) GetAll() ([]models.User, error) {
 	db := db.GetDB()
 	var users []models.User
-	if err := db.Table("users").Select("name, id, email, password, twitter, description, img").Scan(&users).Error; err != nil {
+	if err := db.Table("users").Scan(&users).Error; err != nil {
 		return nil, err
 	}
+	log.Println(users)
 	return users, nil
 }
 
@@ -30,13 +33,13 @@ func (UserRepository) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 	encryptedPassword := crypto.PasswordEncrypt(user.Password)
-	if err := db.Create(&User{Name: user.Name, Email: user.Email, Password: encryptedPassword}).Error; err != nil {
+	if err := db.Create(&User{ID: user.ID, Name: user.Name, Email: user.Email, Password: encryptedPassword}).Error; err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-// getByEmail is used in controllers.Login()
+// GetByEmail is used in controllers.Login()
 func (UserRepository) GetByEmail(email string) User {
 	db := db.GetDB()
 	var user User
@@ -45,7 +48,7 @@ func (UserRepository) GetByEmail(email string) User {
 }
 
 // GetByID gets a User by ID. used in contorollers.Show()
-func (UserRepository) GetByID(id int) (models.User, error) {
+func (UserRepository) GetByID(id string) (models.User, error) {
 	db := db.GetDB()
 	var me models.User
 	if err := db.Where("id = ?", id).First(&me).Error; err != nil {
@@ -60,7 +63,7 @@ func (UserRepository) GetByID(id int) (models.User, error) {
 }
 
 // UpdateByID updates a User. used in contorollers.Update()
-func (UserRepository) UpdateByID(id int, c *gin.Context) (models.User, error) {
+func (UserRepository) UpdateByID(id string, c *gin.Context) (models.User, error) {
 	db := db.GetDB()
 	var user models.User
 	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
@@ -69,14 +72,14 @@ func (UserRepository) UpdateByID(id int, c *gin.Context) (models.User, error) {
 	if err := c.BindJSON(&user); err != nil {
 		return user, err
 	}
-	user.ID = uint(id)
+	user.ID = string(id)
 	db.Save(&user)
 
 	return user, nil
 }
 
 // DeleteByID deletes a User by ID. used in contorollers.Delete()
-func (UserRepository) DeleteByID(id int) error {
+func (UserRepository) DeleteByID(id string) error {
 	db := db.GetDB()
 	var user User
 

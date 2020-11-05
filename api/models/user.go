@@ -1,12 +1,12 @@
 package models
 
 type User struct {
-	ID          uint   `json:"id" gorm:"primary_key"`
-	Name        string `json:"name" binding:"required"`
+	ID          string `json:"id" binding:"required,max=20" gorm:"unique;primary_key;autoIncrement:false"`
+	Name        string `json:"name" binding:"required,max=30"`
 	Email       string `json:"email" binding:"required,email" gorm:"unique;not null"`
-	Password    string `json:"password" binding:"required"`
-	Twitter     string `json:"twitter"`
-	Description string `json:"description"`
+	Password    string `json:"password" binding:"required,max=50"`
+	Twitter     string `json:"twitter" binding:"max=20"`
+	Description string `json:"description" binding:"max=200"`
 	Img         string `json:"img"`
-	Lists       []List `json:"lists" binding:"dive"`
+	Lists       []List `json:"-" binding:"dive"`
 }

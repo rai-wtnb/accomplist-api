@@ -7,6 +7,8 @@ services:
       - .:/go/src/github.com/rai-wtnb/accomplist-api
     ports:
       - '8080:8080'
+    networks:
+      - accomplist_link
     depends_on:
       - db
 
@@ -18,3 +20,9 @@ services:
       POSTGRES_DB: accomplist
     ports:
       - 5432:5432
+    networks:
+      - accomplist_link
+
+networks:
+  accomplist_link:
+    external: true

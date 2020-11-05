@@ -5,3 +5,7 @@ services:
       - .:/workspace:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
 
+networks:
+  accomplist_link:
+    external: true
+

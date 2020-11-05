@@ -19,6 +19,8 @@ func router() *gin.Engine {
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
 
+	r.GET("/ids", controllers.IndexID)
+
 	u := r.Group("/users")
 	{
 		ctrl := controllers.UserController{}

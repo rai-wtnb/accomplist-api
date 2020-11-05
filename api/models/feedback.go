@@ -1,7 +1,10 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type Feedback struct {
-	ID      uint   `json:"id" binding:"required" gorm:"primary_key"`
+	gorm.Model
+	ListID  uint   `json:"list_id" gorm:"not null"`
 	ImgPath string `json:"img"`
 	Title   string `json:"title"`
 	Body    string `json:"body"`
