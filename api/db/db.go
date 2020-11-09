@@ -21,7 +21,7 @@ func Init() {
 	// todo
 	autoMigration()
 	// user := models.User{
-	// 	ID:          "aaaaaa",
+	// 	ID:          "",
 	// 	Name:        "aaa",
 	// 	Email:       "aaa@aaa.com",
 	// 	Password:    "aaaaaa",

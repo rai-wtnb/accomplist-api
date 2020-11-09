@@ -15,10 +15,10 @@ type UserRepository struct{}
 type User models.User
 
 // GetAll is gets all User. used in contorollers.Index()
-func (UserRepository) GetAll() ([]models.User, error) {
+func (UserRepository) GetAll() ([]models.ApiUser, error) {
 	db := db.GetDB()
-	var users []models.User
-	if err := db.Table("users").Scan(&users).Error; err != nil {
+	var users []models.ApiUser
+	if err := db.Table("users").Select("name, twitter, description, img").Scan(&users).Error; err != nil {
 		return nil, err
 	}
 	log.Println(users)
