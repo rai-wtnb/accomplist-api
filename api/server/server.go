@@ -33,15 +33,26 @@ func router() *gin.Engine {
 		u.DELETE("/:id", ctrl.Delete)
 	}
 
-	// p := r.Group("/lists")
+	l := r.Group("/lists")
+	{
+	    ctrl := controllers.ListController{}
+	    l.GET("", ctrl.Index)
+	    l.POST("", ctrl.Create)
+	    l.GET("/:id", ctrl.Show)
+	    l.PUT("/:id", ctrl.Update)
+	    l.DELETE("/:id", ctrl.Delete)
+	}
+
+	// f := f.Group("feedbacks")
 	// {
-	//     ctrl := controllers.ListController{}
-	//     p.GET("", ctrl.Index)
-	//     p.POST("", ctrl.Create)
-	//     p.GET("/:id", ctrl.Show)
-	//     p.PUT("/:id", ctrl.Update)
-	//     p.DELETE("/:id", ctrl.Delete)
+	// 	ctrl := controllers.FeedbackController{}
+	// 	f.GET("", ctrl.Index)
+	// 	f.POST("", ctrl.Create)
+	// 	f.GET("/:id", ctrl.Show)
+	// 	f.PUT("/:id", ctrl.Update)
+	// 	f.DELETE("/:id", ctrl.Delete)
 	// }
+
 
 	return r
 }

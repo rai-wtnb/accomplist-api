@@ -21,7 +21,7 @@ func Init() {
 	// todo
 	autoMigration()
 	// user := models.User{
-	// 	ID:          "",
+	// 	ID:          "aaaaaa",
 	// 	Name:        "aaa",
 	// 	Email:       "aaa@aaa.com",
 	// 	Password:    "aaaaaa",
@@ -36,7 +36,12 @@ func Init() {
 	// 			Title:   "カナダへの旅行!",
 	// 			Body:    "念願の海外旅行を達成しました。Vlogも撮ってきた!",
 	// 		},
-	// 	}},
+	// 	},
+	// 	{
+	// 		Content: "中国語3級合格",
+	// 		Done: false,
+	// 	},
+	// },
 	// }
 	// db.Create(&user)
 }

@@ -85,7 +85,6 @@ func (UserController) Show(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
 	user, err := u.GetByID(id)
-
 	if err != nil {
 		c.AbortWithStatus(400)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -99,7 +98,6 @@ func (UserController) Update(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
 	r, err := u.UpdateByID(id, c)
-
 	if err != nil {
 		c.AbortWithStatus(404)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -112,7 +110,8 @@ func (UserController) Update(c *gin.Context) {
 func (UserController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
-	if err := u.DeleteByID(id); err != nil {
+	err := u.DeleteByID(id)
+	if err != nil {
 		c.AbortWithStatus(403)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

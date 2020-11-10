@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/rai-wtnb/accomplist-api/crypto"
@@ -14,14 +12,13 @@ type UserRepository struct{}
 
 type User models.User
 
-// GetAll is gets all User. used in contorollers.Index()
+// GetAll gets all User. used in contorollers.Index()
 func (UserRepository) GetAll() ([]models.ApiUser, error) {
 	db := db.GetDB()
 	var users []models.ApiUser
-	if err := db.Table("users").Select("name, twitter, description, img").Scan(&users).Error; err != nil {
+	if err := db.Table("users").Select("id, name, twitter, description, img").Scan(&users).Error; err != nil {
 		return nil, err
 	}
-	log.Println(users)
 	return users, nil
 }
 
@@ -33,7 +30,13 @@ func (UserRepository) CreateUser(c *gin.Context) (User, error) {
 		return user, err
 	}
 	encryptedPassword := crypto.PasswordEncrypt(user.Password)
-	if err := db.Create(&User{ID: user.ID, Name: user.Name, Email: user.Email, Password: encryptedPassword}).Error; err != nil {
+	if err := db.Create(
+		&User{
+			ID:       user.ID,
+			Name:     user.Name,
+			Email:    user.Email,
+			Password: encryptedPassword,
+		}).Error; err != nil {
 		return user, err
 	}
 	return user, nil
@@ -74,18 +77,16 @@ func (UserRepository) UpdateByID(id string, c *gin.Context) (models.User, error)
 	}
 	user.ID = string(id)
 	db.Save(&user)
-
 	return user, nil
 }
 
-// DeleteByID deletes a User by ID. used in contorollers.Delete()
+// DeleteByID deletes a User matches with ID. used in contorollers.Delete()
 func (UserRepository) DeleteByID(id string) error {
 	db := db.GetDB()
 	var user User
-
-	if err := db.Where("id = ?", id).Delete(&user).Error; err != nil {
+	err := db.Where("id = ?", id).Delete(&user).Error
+	if err != nil {
 		return err
 	}
-
 	return nil
 }
