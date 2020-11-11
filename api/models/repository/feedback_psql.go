@@ -32,6 +32,7 @@ func (FeedbackRepository) CreateFeedback(c *gin.Context) (Feedback, error) {
 	}
 	if err := db.Create(
 		&Feedback{
+			UserID: feedback.UserID,
 			ListID:  feedback.ListID,
 			ImgPath: feedback.ImgPath,
 			Title:   feedback.Title,
