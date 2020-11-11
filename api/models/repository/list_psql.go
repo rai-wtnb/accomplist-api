@@ -11,11 +11,12 @@ type ListRepository struct{}
 
 type List models.List
 
-// GetAll gets all List. used in controllers.Index()
+// GetAll gets all Lists. used in controllers.Index()
 func (ListRepository) GetAll() ([]models.List, error) {
 	db := db.GetDB()
 	var lists []models.List
-	if err := db.Table("lists").Scan(&lists).Error; err != nil {
+	err := db.Table("lists").Scan(&lists).Error
+	if err != nil {
 		return nil, err
 	}
 	return lists, nil
@@ -25,14 +26,15 @@ func (ListRepository) GetAll() ([]models.List, error) {
 func (ListRepository) CreateList(c *gin.Context) (List, error) {
 	db := db.GetDB()
 	var list List
-	if err := c.BindJSON(&list); err != nil {
+	err := c.BindJSON(&list)
+	if err != nil {
 		return list, err
 	}
 	if err := db.Create(
 		&List{
-			UserID: list.UserID,
+			UserID:  list.UserID,
 			Content: list.Content,
-			Done: list.Done,
+			Done:    list.Done,
 		}).Error; err != nil {
 		return list, err
 	}
@@ -50,7 +52,7 @@ func (ListRepository) GetByUserID(id string) ([]models.List, error) {
 }
 
 // UpdateByID updates a List. used in contorollers.Update()
-func (ListRepository)  UpdateByID(id string, c *gin.Context) (models.List, error) {
+func (ListRepository) UpdateByID(id string, c *gin.Context) (models.List, error) {
 	db := db.GetDB()
 	var list models.List
 	if err := db.Where("id = ?", id).First(&list).Error; err != nil {
