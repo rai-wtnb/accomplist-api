@@ -20,7 +20,7 @@ func (ListController) Index(c *gin.Context){
 	}
 }
 
-// Create : POST /lists
+// Create : POST /lists/users
 func (ListController) Create(c *gin.Context){
 	var l repository.ListRepository
 	r, err := l.CreateList(c)
@@ -33,7 +33,7 @@ func (ListController) Create(c *gin.Context){
 }
 
 // Show : GET /lists/:id
-func (ListController) Show(c *gin.Context) {
+func (ListController) IndexByUserID(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var l repository.ListRepository
 	list, err := l.GetByUserID(id)
@@ -45,7 +45,20 @@ func (ListController) Show(c *gin.Context) {
 	}
 }
 
-// Update : PUT /lists/:id
+// Show : GET /lists/specific/:id
+func (ListController) Show(c *gin.Context) {
+	id := c.Params.ByName("id")
+	var l repository.ListRepository
+	r, err := l.GetByListID(id, c)
+	if err != nil {
+		c.AbortWithStatus(404)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(200, r)
+	}
+}
+
+// Update : PUT /lists/specific/:id
 func (ListController) Update(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var l repository.ListRepository
@@ -58,7 +71,7 @@ func (ListController) Update(c *gin.Context) {
 	}
 }
 
-// Delete : DELETE /lists/:id
+// Delete : DELETE /specific/lists/:id
 func (ListController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var l repository.ListRepository

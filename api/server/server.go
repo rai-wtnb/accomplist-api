@@ -45,10 +45,11 @@ func router() *gin.Engine {
 	{
 	    ctrl := controllers.ListController{}
 	    l.GET("", ctrl.Index)
-	    l.POST("", ctrl.Create)
-	    l.GET("/:id", ctrl.Show)
-	    l.PUT("/:id", ctrl.Update)
-	    l.DELETE("/:id", ctrl.Delete)
+			l.POST("", ctrl.Create)
+			l.GET("/users/:id", ctrl.IndexByUserID)
+	    l.GET("/specific/:id", ctrl.Show)
+	    l.PUT("/specific/:id", ctrl.Update)
+	    l.DELETE("/specific/:id", ctrl.Delete)
 	}
 
 	f := r.Group("feedbacks")

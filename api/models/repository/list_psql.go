@@ -22,7 +22,7 @@ func (ListRepository) GetAll() ([]models.List, error) {
 	return lists, nil
 }
 
-// CreateList creates User model. used in contorollers.Create()
+// CreateList creates User model. used in controllers.Create()
 func (ListRepository) CreateList(c *gin.Context) (List, error) {
 	db := db.GetDB()
 	var list List
@@ -41,7 +41,7 @@ func (ListRepository) CreateList(c *gin.Context) (List, error) {
 	return list, nil
 }
 
-// GetByUserID gets lists matches with user ID. used in contorollers.Show()
+// GetByUserID gets lists matches with user ID. used in controllers.IndexByUserID()
 func (ListRepository) GetByUserID(id string) ([]models.List, error) {
 	db := db.GetDB()
 	var lists []models.List
@@ -51,7 +51,17 @@ func (ListRepository) GetByUserID(id string) ([]models.List, error) {
 	return lists, nil
 }
 
-// UpdateByID updates a List. used in contorollers.Update()
+// GetByListID get a list. used in contorollers.Show()
+func (ListRepository) GetByListID(id string, c *gin.Context) (models.List, error) {
+	db := db.GetDB()
+	var list models.List
+	if err := db.Where("ID = ?", id).Find(&list).Error; err != nil {
+		return list, err
+	}
+	return list, nil
+}
+
+// UpdateByID updates a List. used in controllers.Update()
 func (ListRepository) UpdateByID(id string, c *gin.Context) (models.List, error) {
 	db := db.GetDB()
 	var list models.List
