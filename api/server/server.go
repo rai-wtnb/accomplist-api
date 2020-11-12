@@ -59,7 +59,7 @@ func router() *gin.Engine {
 		f.POST("", ctrl.Create)
 		f.GET("/:id", ctrl.Show)
 		f.PUT("/:id", ctrl.Update)
-		f.DELETE("/:id", ctrl.Delete)
+		f.DELETE("/:list-id", ctrl.Delete)
 	}
 
 

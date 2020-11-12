@@ -66,11 +66,11 @@ func (FeedbackRepository) UpdateByID(id string, c *gin.Context) (models.Feedback
 	return feedback, nil
 }
 
-// DeleteByID deletes a feedback batches with ID. used in controllers.Delete()
-func (FeedbackRepository) DeleteByID(id string) error {
+// DeleteByListID deletes a feedback batches with ID. used in controllers.Delete()
+func (FeedbackRepository) DeleteByListID(id string) error {
 	db := db.GetDB()
 	var feedback Feedback
-	err := db.Where("id = ?", id).Delete(&feedback).Error
+	err := db.Where("list_id = ?", id).Delete(&feedback).Error
 	if err != nil {
 		return err
 	}

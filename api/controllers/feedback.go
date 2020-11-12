@@ -60,9 +60,9 @@ func (FeedbackController) Update(c *gin.Context) {
 
 //Delete: DELETE /feedbacks/:id
 func (FeedbackController) Delete(c *gin.Context) {
-	id := c.Params.ByName("id")
+	id := c.Params.ByName("list-id")
 	var f repository.FeedbackRepository
-	err := f.DeleteByID(id)
+	err := f.DeleteByListID(id)
 	if err != nil {
 		c.AbortWithStatus(403)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
