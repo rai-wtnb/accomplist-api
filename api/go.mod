@@ -12,9 +12,10 @@ require (
 
 replace (
 	github.com/rai-wtnb/accomplist-api/controllers => ./controllers
-	github.com/rai-wtnb/accomplist-api/crypto => ./crypto
+	github.com/rai-wtnb/accomplist-api/utils/mysession => ./utils/mysession
+	github.com/rai-wtnb/accomplist-api/utils/crypto => ./utils/crypto
 	github.com/rai-wtnb/accomplist-api/db => ./db
 	github.com/rai-wtnb/accomplist-api/models => ./models
-	github.com/rai-wtnb/accomplist-api/repository => ./models/repository
+	github.com/rai-wtnb/accomplist-api/models/repository => ./models/repository
 	github.com/rai-wtnb/accomplist-api/server => ./server
 )

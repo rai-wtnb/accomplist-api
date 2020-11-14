@@ -20,7 +20,7 @@ func (ListController) Index(c *gin.Context){
 	}
 }
 
-// Create : POST /lists/users
+// Create : POST /lists/
 func (ListController) Create(c *gin.Context){
 	var l repository.ListRepository
 	r, err := l.CreateList(c)
@@ -32,7 +32,7 @@ func (ListController) Create(c *gin.Context){
 	}
 }
 
-// Show : GET /lists/:id
+// Show : GET /lists/specific/:id
 func (ListController) IndexByUserID(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var l repository.ListRepository
@@ -71,7 +71,7 @@ func (ListController) Update(c *gin.Context) {
 	}
 }
 
-// Delete : DELETE /specific/lists/:id
+// Delete : DELETE /lists/specific/:id
 func (ListController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var l repository.ListRepository

@@ -24,8 +24,10 @@ func router() *gin.Engine {
     r.Use(cors.New(config))
 
 	// session
+	// TODO
+	// ////////
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
+	r.Use(sessions.Sessions("AccompListSession", store))
 
 	r.GET("/ids", controllers.IndexID)
 

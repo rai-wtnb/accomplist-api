@@ -43,6 +43,7 @@ func (FeedbackRepository) CreateFeedback(c *gin.Context) (Feedback, error) {
 	return feedback, nil
 }
 
+// GetByListID get a Feedback matched with list_ID. used in controllers.Show()
 func (FeedbackRepository) GetByListID(id string) (models.Feedback, error) {
 	db := db.GetDB()
 	var feedback models.Feedback

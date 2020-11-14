@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/rai-wtnb/accomplist-api/crypto"
+	"github.com/rai-wtnb/accomplist-api/utils/crypto"
 	"github.com/rai-wtnb/accomplist-api/db"
 	"github.com/rai-wtnb/accomplist-api/models"
 )
@@ -43,25 +43,22 @@ func (UserRepository) CreateUser(c *gin.Context) (User, error) {
 }
 
 // GetByEmail is used in controllers.Login()
-func (UserRepository) GetByEmail(email string) User {
+func (UserRepository) GetByEmail(email string) (models.User, error) {
 	db := db.GetDB()
-	var user User
-	db.First(&user, "email = ?", email)
-	return user
+	var user models.User
+	if err := db.Table("users").Where("email = ?", email).First(&user).Error; err != nil {
+		return user, err
+	}
+	return user, nil
 }
 
 // GetByID gets a User by ID. used in contorollers.Show()
-func (UserRepository) GetByID(id string) (models.User, error) {
+func (UserRepository) GetByID(id string) (models.ApiUser, error) {
 	db := db.GetDB()
-	var me models.User
-	if err := db.Where("id = ?", id).First(&me).Error; err != nil {
+	var me models.ApiUser
+	if err := db.Table("users").Where("id = ?", id).Select("id, name, twitter, description, img").First(&me).Error; err != nil {
 		return me, err
 	}
-	var lists []models.List
-	db.Where("id = ?", id).First(&me)
-	db.Model(&me).Related(&lists)
-	me.Lists = lists
-
 	return me, nil
 }
 
