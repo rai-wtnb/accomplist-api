@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+
+	"github.com/rai-wtnb/accomplist-api/models/repository"
 	"github.com/rai-wtnb/accomplist-api/utils/crypto"
 	"github.com/rai-wtnb/accomplist-api/utils/mysession"
-	"github.com/rai-wtnb/accomplist-api/models/repository"
+	"github.com/rai-wtnb/accomplist-api/models"
 )
 
 type UserController struct{}
@@ -19,9 +19,7 @@ func (UserController) Signup(c *gin.Context) {
 	var u repository.UserRepository
 	r, err := u.CreateUser(c)
 	if err != nil {
-		session := sessions.Default(c)
-		session.Set("loginUser", c.PostForm("id"))
-		session.Save()
+		// session.Set("loginUser", c.PostForm("id"))
 		c.AbortWithStatus(400)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
@@ -32,7 +30,7 @@ func (UserController) Signup(c *gin.Context) {
 // Login : POST /users/login
 func (UserController) Login(c *gin.Context) {
 	var u repository.UserRepository
-	user, err := u.GetByEmail(c.PostForm("email"));
+	user, err := u.GetByEmail(c.PostForm("email"))
 	if err != nil {
 		c.AbortWithStatus(400)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,28 +41,24 @@ func (UserController) Login(c *gin.Context) {
 
 	if err := crypto.Verify(dbPassword, formPassword); err != nil {
 		c.AbortWithStatus(400)
-		log.Println("ログイン失敗")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		sessionID := mysession.NewSessionID()
-		session := sessions.Default(c)
-		session.Set("sessionID", sessionID)
-		session.Set("loginUser", user.ID)
-		session.Save()
-		// todo
-		r := make(map[string]string, 2)
-		r["sessionID"] = sessionID
-		r["userID"] = user.ID
-		c.JSON(http.StatusOK, r)
+		u.SaveSession(user.ID, sessionID)
+		c.JSON(200, gin.H{
+			"sessionID": sessionID,
+			"userID":    user.ID,
+		})
 	}
 }
 
 // Logout : POST /users/logout
 func (UserController) Logout(c *gin.Context) {
-	session := sessions.Default(c)
-	session.Clear()
-	session.Save()
-	// todo
+	// var u repository.UserRepository
+	userID, _ := c.Cookie("userID")
+	log.Println("userID : ", userID)
+	// user, err := u.GetByID(id)
+	// u.DeleteSession()
 	c.String(http.StatusOK, "ログアウト完了")
 }
 
@@ -111,14 +105,31 @@ func (UserController) Show(c *gin.Context) {
 
 // Update : PUT /users/:id
 func (UserController) Update(c *gin.Context) {
-	id := c.Params.ByName("id")
 	var u repository.UserRepository
-	r, err := u.UpdateByID(id, c)
+	var userAndSession models.UserAndSession
+	if err := c.BindJSON(&userAndSession); err != nil {
+		c.AbortWithStatus(400)
+	}
+
+	id := c.Params.ByName("id")
+	dbSessionID, err := u.GetSession(id)
 	if err != nil {
-		c.AbortWithStatus(404)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(400)
+	}
+
+	// validation
+	if dbSessionID == userAndSession.SessionID {
+		r, err := u.UpdateByID(id, userAndSession)
+		if err != nil {
+			log.Println("failed to update")
+			c.AbortWithStatus(400)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(200, r)
+		}
 	} else {
-		c.JSON(200, r)
+		log.Println("wrong sessionID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 

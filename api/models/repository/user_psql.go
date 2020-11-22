@@ -3,9 +3,9 @@ package repository
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/rai-wtnb/accomplist-api/utils/crypto"
 	"github.com/rai-wtnb/accomplist-api/db"
 	"github.com/rai-wtnb/accomplist-api/models"
+	"github.com/rai-wtnb/accomplist-api/utils/crypto"
 )
 
 type UserRepository struct{}
@@ -63,16 +63,16 @@ func (UserRepository) GetByID(id string) (models.ApiUser, error) {
 }
 
 // UpdateByID updates a User. used in contorollers.Update()
-func (UserRepository) UpdateByID(id string, c *gin.Context) (models.User, error) {
+func (UserRepository) UpdateByID(id string, userAndSession models.UserAndSession) (models.User, error) {
 	db := db.GetDB()
 	var user models.User
 	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
 		return user, err
 	}
-	if err := c.BindJSON(&user); err != nil {
-		return user, err
-	}
-	user.ID = string(id)
+	user.Img = userAndSession.Img
+	user.Name = userAndSession.Name
+	user.Twitter = userAndSession.Twitter
+	user.Description = userAndSession.Description
 	db.Save(&user)
 	return user, nil
 }
@@ -80,10 +80,44 @@ func (UserRepository) UpdateByID(id string, c *gin.Context) (models.User, error)
 // DeleteByID deletes a User matches with ID. used in contorollers.Delete()
 func (UserRepository) DeleteByID(id string) error {
 	db := db.GetDB()
-	var user User
+	var user models.User
 	err := db.Where("id = ?", id).Delete(&user).Error
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// SaveSession save sessionID when user login or signup. used in contorollers.Login(), SignUp()
+func (UserRepository) SaveSession(id, sessionID string) (models.User, error) {
+	db := db.GetDB()
+	var user models.User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return user, err
+	}
+	user.SessionID = sessionID
+	db.Save(&user)
+	return user, nil
+}
+
+// getSession gets sessionID by userID.
+func (UserRepository) GetSession(id string) (string, error) {
+	db := db.GetDB()
+	var user models.User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return user.SessionID, err
+	}
+	return user.SessionID, nil
+}
+
+// DeleteSession deletes sessionID when user logout. used in controllers.Logout()
+func (UserRepository) DeleteSession(id string) error {
+	db := db.GetDB()
+	var user models.User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return err
+	}
+	user.SessionID = ""
+	db.Save(&user)
 	return nil
 }

@@ -2,14 +2,14 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/rai-wtnb/accomplist-api/models/repository"
+	"net/http"
 )
 
 type ListController struct{}
 
 // Index : GET /lists
-func (ListController) Index(c *gin.Context){
+func (ListController) Index(c *gin.Context) {
 	var l repository.ListRepository
 	r, err := l.GetAll()
 	if err != nil {
@@ -21,7 +21,7 @@ func (ListController) Index(c *gin.Context){
 }
 
 // Create : POST /lists/
-func (ListController) Create(c *gin.Context){
+func (ListController) Create(c *gin.Context) {
 	var l repository.ListRepository
 	r, err := l.CreateList(c)
 	if err != nil {

@@ -2,8 +2,6 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-contrib/cors"
 
 	"github.com/rai-wtnb/accomplist-api/controllers"
@@ -22,12 +20,6 @@ func router() *gin.Engine {
     config := cors.DefaultConfig()
     config.AllowOrigins = []string{"http://localhost:3000"}
     r.Use(cors.New(config))
-
-	// session
-	// TODO
-	// ////////
-	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("AccompListSession", store))
 
 	r.GET("/ids", controllers.IndexID)
 
