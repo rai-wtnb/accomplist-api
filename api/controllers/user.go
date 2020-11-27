@@ -19,11 +19,15 @@ func (UserController) Signup(c *gin.Context) {
 	var u repository.UserRepository
 	r, err := u.CreateUser(c)
 	if err != nil {
-		// session.Set("loginUser", c.PostForm("id"))
 		c.AbortWithStatus(400)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(201, r)
+		sessionID := mysession.NewSessionID()
+		u.SaveSession(r.ID, sessionID)
+		c.JSON(201, gin.H{
+			"sessionID": sessionID,
+			"userID":    r.ID,
+		})
 	}
 }
 
