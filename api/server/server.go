@@ -54,6 +54,7 @@ func router() *gin.Engine {
 		f.POST("", ctrl.Create)
 		f.GET("/:id", ctrl.Show)
 		f.PUT("/:id", ctrl.Update)
+		f.PUT("/:id/img", ctrl.UpdateImgByListID)
 		f.DELETE("/:list-id", ctrl.Delete)
 	}
 

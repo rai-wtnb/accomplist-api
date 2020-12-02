@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"log"
-	"net/http"
 	"bytes"
 	"io"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 

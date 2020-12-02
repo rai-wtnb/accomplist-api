@@ -28,10 +28,7 @@ func Upload(file []byte, fileName string) (string, error) {
 }
 
 func sendToS3(file []byte, fileName string) (string, error) {
-	// pos := strings.LastIndex(fileName, ".")
-	// extension := fmt.Sprintln(fileName[pos +1 :])
 	extension := filepath.Ext(fileName)
-	log.Println(extension)
 	contentType := getContentType(extension)
 	if contentType == "" {
 		log.Println("contentType: ", contentType)

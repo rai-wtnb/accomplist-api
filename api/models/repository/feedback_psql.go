@@ -67,6 +67,18 @@ func (FeedbackRepository) UpdateByID(id string, c *gin.Context) (models.Feedback
 	return feedback, nil
 }
 
+// SaveUrlByID saves url of image uploaded to s3. used in controllers.UpdateImage()
+func (FeedbackRepository) SaveUrlByListID(id, url string) (models.Feedback, error) {
+	db := db.GetDB()
+	var feedback models.Feedback
+	if err := db.Where("list_id = ?", id).First(&feedback).Error; err != nil {
+		return feedback, err
+	}
+	feedback.ImgPath = url
+	db.Save(&feedback)
+	return feedback, nil
+}
+
 // DeleteByListID deletes a feedback batches with ID. used in controllers.Delete()
 func (FeedbackRepository) DeleteByListID(id string) error {
 	db := db.GetDB()
