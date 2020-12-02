@@ -69,10 +69,22 @@ func (UserRepository) UpdateByID(id string, userAndSession models.UserAndSession
 	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
 		return user, err
 	}
-	user.Img = userAndSession.Img
+
 	user.Name = userAndSession.Name
 	user.Twitter = userAndSession.Twitter
 	user.Description = userAndSession.Description
+	db.Save(&user)
+	return user, nil
+}
+
+// SaveUrlByID saves url of image uploaded to s3. used in controllers.UpdateImage()
+func (UserRepository) SaveUrlByID(id, url string) (models.User, error){
+	db := db.GetDB()
+	var user models.User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return user, err
+	}
+	user.Img = url
 	db.Save(&user)
 	return user, nil
 }

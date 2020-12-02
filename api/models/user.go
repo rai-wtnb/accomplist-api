@@ -22,7 +22,6 @@ type ApiUser struct {
 }
 
 type UserAndSession struct {
-		Img         string `json:"img"`
 		Name        string `json:"name"`
 		Twitter     string `json:"twitter"`
 		Description string `json:"description"`

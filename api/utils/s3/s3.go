@@ -4,8 +4,10 @@ import (
 	"os"
 	"log"
 	"fmt"
+	"time"
 	"errors"
 	"bytes"
+	"crypto/sha1"
 	"path/filepath"
 
 	"github.com/joho/godotenv"
@@ -15,28 +17,31 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-func Upload(file []byte) (string, error) {
+func Upload(file []byte, fileName string) (string, error) {
 	loadEnv()
 
-	//todo
-	fileUrl, err := sendToS3(file, "empty.png")
+	fileUrl, err := sendToS3(file, fileName)
 	if err != nil {
 		return fileUrl, err
 	}
-
-	//fileUrlをデータベースに記録する
 	return fileUrl, nil
 }
 
 func sendToS3(file []byte, fileName string) (string, error) {
-	contentType := getContentType(filepath.Ext(fileName))
+	// pos := strings.LastIndex(fileName, ".")
+	// extension := fmt.Sprintln(fileName[pos +1 :])
+	extension := filepath.Ext(fileName)
+	log.Println(extension)
+	contentType := getContentType(extension)
 	if contentType == "" {
+		log.Println("contentType: ", contentType)
 		return "", errors.New("Unknown content type")
 	}
 
 	uploader := uploader()
 
-	key := fmt.Sprintf("uploads/%s", fileName)
+	h := sha1.Sum(file)
+	key := fmt.Sprintf("uploads/%s_%x", time.Now().Format("20060102150405"), h[:4])
 
 	_, err := uploader.Upload(&s3manager.UploadInput{
 		Body:        bytes.NewReader(file),
@@ -77,13 +82,13 @@ func uploader() *s3manager.Uploader {
 // getContentType judges file file type.
 func getContentType(extension string) string {
 	switch extension {
-	case "jpg":
+	case ".jpg":
 		return "image/jpeg"
-	case "jpeg":
+	case ".jpeg":
 		return "image/jpeg"
-	case "gif":
+	case ".gif":
 		return "image/gif"
-	case "png":
+	case ".png":
 		return "image/png"
 	default:
 		return ""

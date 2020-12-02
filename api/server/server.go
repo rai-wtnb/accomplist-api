@@ -32,6 +32,7 @@ func router() *gin.Engine {
 		u.POST("/logout", ctrl.Logout)
 		u.GET("/:id", ctrl.Show)
 		u.PUT("/:id", ctrl.Update)
+		u.PUT("/:id/img", ctrl.UpdateImg)
 		u.DELETE("/:id", ctrl.Delete)
 	}
 
