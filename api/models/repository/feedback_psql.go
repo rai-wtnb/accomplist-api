@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"github.com/gin-gonic/gin"
-
 	"github.com/rai-wtnb/accomplist-api/db"
 	"github.com/rai-wtnb/accomplist-api/models"
 )
@@ -23,20 +21,15 @@ func (FeedbackRepository) GetAll() ([]models.Feedback, error) {
 }
 
 // CreateFeedback creates Feedback model. used in controllers.Create()
-func (FeedbackRepository) CreateFeedback(c *gin.Context) (Feedback, error) {
+func (FeedbackRepository) CreateFeedback(feedbackAndSession models.FeedbackAndSession) (Feedback, error) {
 	db := db.GetDB()
 	var feedback Feedback
-	err := c.BindJSON(&feedback)
-	if err != nil {
-		return feedback, err
-	}
 	if err := db.Create(
 		&Feedback{
-			UserID:  feedback.UserID,
-			ListID:  feedback.ListID,
-			ImgPath: feedback.ImgPath,
-			Title:   feedback.Title,
-			Body:    feedback.Body,
+			UserID:  feedbackAndSession.UserID,
+			ListID:  feedbackAndSession.ListID,
+			Title:   feedbackAndSession.Title,
+			Body:    feedbackAndSession.Body,
 		}).Error; err != nil {
 		return feedback, err
 	}
@@ -54,15 +47,17 @@ func (FeedbackRepository) GetByListID(id string) (models.Feedback, error) {
 }
 
 // UpdateByID updates Feedback. used in controllers.Update()
-func (FeedbackRepository) UpdateByID(id string, c *gin.Context) (models.Feedback, error) {
+func (FeedbackRepository) UpdateByID(id string, feedbackAndSession models.FeedbackAndSession) (models.Feedback, error) {
 	db := db.GetDB()
 	var feedback models.Feedback
 	if err := db.Where("id = ?", id).First(&feedback).Error; err != nil {
 		return feedback, err
 	}
-	if err := c.BindJSON(&feedback); err != nil {
-		return feedback, err
-	}
+
+	feedback.UserID = feedbackAndSession.UserID
+	feedback.ListID = feedbackAndSession.ListID
+	feedback.Title = feedbackAndSession.Title
+	feedback.Body = feedbackAndSession.Body
 	db.Save(&feedback)
 	return feedback, nil
 }

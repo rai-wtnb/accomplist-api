@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"bytes"
 	"io"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rai-wtnb/accomplist-api/models/repository"
 	"github.com/rai-wtnb/accomplist-api/utils/s3"
+	"github.com/rai-wtnb/accomplist-api/models"
 )
 
 type FeedbackController struct{}
@@ -26,13 +28,25 @@ func (FeedbackController) Index(c *gin.Context) {
 
 // Create : POST /feedbacks
 func (FeedbackController) Create(c *gin.Context) {
-	var f repository.FeedbackRepository
-	r, err := f.CreateFeedback(c)
-	if err != nil {
-		c.AbortWithStatus(400)
+	var feedbackAndSession models.FeedbackAndSession
+	if err := c.BindJSON(&feedbackAndSession); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(201, r)
+		var f repository.FeedbackRepository
+		var u repository.UserRepository
+		dbSessionID, _ := u.GetSession(feedbackAndSession.UserID)
+
+		// validation
+		if dbSessionID == feedbackAndSession.SessionID {
+		if r, err := f.CreateFeedback(feedbackAndSession); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+			c.JSON(200, r)
+		}
+		} else {
+			log.Println("wrong sessionID")
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
 	}
 }
 
@@ -51,13 +65,26 @@ func (FeedbackController) Show(c *gin.Context) {
 
 // Update : PUT /feedbacks/:id
 func (FeedbackController) Update(c *gin.Context) {
-	id := c.Params.ByName("id")
-	var f repository.FeedbackRepository
-	r, err := f.UpdateByID(id, c)
-	if err != nil {
+	var feedbackAndSession models.FeedbackAndSession
+	if err := c.BindJSON(&feedbackAndSession); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(200, r)
+		id := c.Params.ByName("id")
+		var f repository.FeedbackRepository
+		var u repository.UserRepository
+		dbSessionID, _ := u.GetSession(feedbackAndSession.UserID)
+
+		// validation
+		if dbSessionID == feedbackAndSession.SessionID {
+		if r, err := f.UpdateByID(id, feedbackAndSession); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+			c.JSON(200, r)
+		}
+		} else {
+			log.Println("wrong sessionID")
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
 	}
 }
 

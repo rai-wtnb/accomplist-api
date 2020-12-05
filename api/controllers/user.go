@@ -115,23 +115,16 @@ func (UserController) Update(c *gin.Context) {
 	var userAndSession models.UserAndSession
 
 	if err := c.BindJSON(&userAndSession); err != nil {
-		log.Println("failed to bind json")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		id := c.Params.ByName("id")
-		dbSessionID, err := u.GetSession(id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		}
+		dbSessionID, _ := u.GetSession(id)
 
 		// validation
 		if dbSessionID == userAndSession.SessionID {
-			r, err := u.UpdateByID(id, userAndSession)
-			if err != nil {
-				log.Println("failed to update")
+			if r, err := u.UpdateByID(id, userAndSession); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				log.Println("success")
 				c.JSON(200, r)
 			}
 		} else {
