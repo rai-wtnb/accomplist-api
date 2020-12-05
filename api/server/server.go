@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 
 	"github.com/rai-wtnb/accomplist-api/controllers"
 )
@@ -17,9 +17,9 @@ func router() *gin.Engine {
 	r := gin.Default()
 
 	// CORS
-    config := cors.DefaultConfig()
-    config.AllowOrigins = []string{"http://localhost:3000"}
-    r.Use(cors.New(config))
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	r.Use(cors.New(config))
 
 	r.GET("/ids", controllers.IndexID)
 
@@ -38,13 +38,13 @@ func router() *gin.Engine {
 
 	l := r.Group("/lists")
 	{
-	    ctrl := controllers.ListController{}
-	    l.GET("", ctrl.Index)
-			l.POST("", ctrl.Create)
-			l.GET("/users/:id", ctrl.IndexByUserID)
-	    l.GET("/specific/:id", ctrl.Show)
-	    l.PUT("/specific/:id", ctrl.Update)
-	    l.DELETE("/specific/:id", ctrl.Delete)
+		ctrl := controllers.ListController{}
+		l.GET("", ctrl.Index)
+		l.POST("", ctrl.Create)
+		l.GET("/users/:id", ctrl.IndexByUserID)
+		l.GET("/specific/:id", ctrl.Show)
+		l.PUT("/specific/:id", ctrl.Update)
+		l.DELETE("/specific/:id", ctrl.Delete)
 	}
 
 	f := r.Group("feedbacks")
@@ -57,7 +57,6 @@ func router() *gin.Engine {
 		f.PUT("/:id/img", ctrl.UpdateImgByListID)
 		f.DELETE("/:list-id", ctrl.Delete)
 	}
-
 
 	return r
 }

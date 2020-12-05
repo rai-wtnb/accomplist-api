@@ -18,32 +18,7 @@ func Init() {
 		panic(err)
 	}
 
-	// todo
 	autoMigration()
-	// user := models.User{
-	// 	ID:          "aaaaaa",
-	// 	Name:        "aaa",
-	// 	Email:       "aaa@aaa.com",
-	// 	Password:    "aaaaaa",
-	// 	Twitter:     "mmuu_kkuu",
-	// 	Description: "エンジニア志望の22卒",
-	// 	Img:         "https://via.placeholder.com/60",
-	// 	Lists: []models.List{{
-	// 		Content: "海外旅行をする",
-	// 		Done:    true,
-	// 		Feedback: models.Feedback{
-	// 			ImgPath: "https://via.placeholder.com/60",
-	// 			Title:   "カナダへの旅行!",
-	// 			Body:    "念願の海外旅行を達成しました。Vlogも撮ってきた!",
-	// 		},
-	// 	},
-	// 	{
-	// 		Content: "中国語3級合格",
-	// 		Done: false,
-	// 	},
-	// },
-	// }
-	// db.Create(&user)
 }
 
 // GetDB gets db.
