@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/rai-wtnb/accomplist-api/branch/main/graph/badge.svg?token=I3MLDYFD21)](https://codecov.io/gh/rai-wtnb/accomplist-api)
 # AccompList-api
 api of my portfolio.
 アプリケーション概要
