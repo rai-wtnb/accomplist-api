@@ -7,6 +7,8 @@ executors:
   go-1-13-5:
     docker:
       - image: circleci/golang:1.13.5-node
+        environment:
+          GO111MODULE: "on"
     working_directory: /go/src/github.com/rai-wtnb/accomplist-api/api
 
 jobs:
@@ -15,21 +17,26 @@ jobs:
     steps:
       - checkout
       - run: go version
-      - run: go test -v -cover
-      - run: go get -v -t -d ./...
       - run: go test -v -cover -coverprofile=coverage.out ./...
       - codecov/upload:
-        file: ./coverage.out
+          file: ./coverage.out
   build:
     executor: go-1-13-5
     steps:
       - checkout
-      - run: go get -v -t -d ./...
-      - run: go build
+      - run: cd ./api && go build
 
 workflows:
   version: 2
   test and build:
     jobs:
-      - test
-      - build
+      - test:
+          filters:
+              branches:
+                only:
+                  - main
+      - build:
+          filters:
+              branches:
+                only:
+                  - main
