@@ -31,10 +31,6 @@ workflows:
   test and build:
     jobs:
       - test:
-          filters:
-              branches:
-                only:
-                  - main
       - build:
           filters:
               branches:
