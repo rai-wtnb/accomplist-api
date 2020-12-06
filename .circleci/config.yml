@@ -30,11 +30,7 @@ workflows:
   version: 2
   test and build:
     jobs:
-      - test:
-          filters:
-              branches:
-                only:
-                  - main
+      - test
       - build:
           filters:
               branches:
