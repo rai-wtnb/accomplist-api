@@ -25,13 +25,31 @@ jobs:
     steps:
       - checkout
       - run: cd ./api && go build
+  build_image:
+    docker:
+      - image: docker:18.09.0
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: install awscli
+          command: |
+            apk add --no-cache --update py-pip
+            pip install awscli
+      - run:
+          name: login ecr
+          command: |
+            docker build -f ./docker/prod/Dockerfile -t ${ECR_DOMAIN}:$CIRCLE_SHA1 -t ${ECR_DOMAIN}:latest .
 
 workflows:
   version: 2
   test and build:
     jobs:
       - test
-      - build:
+      - build
+      - build_image:
+          requires:
+            - build
           filters:
               branches:
                 only:
