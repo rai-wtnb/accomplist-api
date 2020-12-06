@@ -5,7 +5,7 @@ variable "prefix" {
 terraform {
   backend "s3" {
     bucket = "accomplist-tfstate-bucket"
-    key    = "accomplist/ecr/terraform.tfstate"
+    key    = "accomplist/iam/terraform.tfstate"
     region = "ap-northeast-1"
   }
 }
