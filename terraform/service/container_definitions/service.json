@@ -1,0 +1,27 @@
+[
+  {
+    "name": "accomplist-api",
+    "image": "327222865572.dkr.ecr.ap-northeast-1.amazonaws.com/accomplist-ecr:f3b227c939f6d594515a7188c821579c53c6c131",
+    "cpu": 333,
+    "memoryReservation": 600,
+    "essential": true,
+    "portMappings": [
+      {
+        "hostPort": 0,
+        "protocol": "tcp",
+        "containerPort": 4567
+      }
+    ],
+    "command": [
+      "/app/main"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "accomplist-api",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "accomplist"
+      }
+    }
+  }
+]
