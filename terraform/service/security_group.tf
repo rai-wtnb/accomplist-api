@@ -29,6 +29,15 @@ resource "aws_security_group" "alb" {
     from_port = 80
     to_port   = 80
     protocol  = "TCP"
+    cidr_blocks = [
+      "0.0.0.0/0",
+    ]
+  }
+
+  ingress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "TCP"
 
     cidr_blocks = [
       "0.0.0.0/0",
@@ -42,3 +51,18 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# resource "aws_security_group" "db" {
+#   name        = "accomplist-db"
+#   description = "db of accomplist"
+#   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+
+#   ingress {
+#     from_port = 5432
+#     to_port   = 5432
+#     protocol  = "tcp"
+#     security_groups = [
+#       aws_security_group.instance.id,
+#     ]
+#   }
+# }
