@@ -22,6 +22,25 @@
         "awslogs-region": "ap-northeast-1",
         "awslogs-stream-prefix": "accomplist"
       }
-    }
+    },
+    "environment": [],
+    "secret": [
+      {
+        "name": "DB_HOST",
+        "valueFROM": "DB_HOST"
+      },
+      {
+        "name": "DB_PASS",
+        "valueFROM": "DB_PASS"
+      },
+      {
+        "name": "S3_ACCESS",
+        "valueFROM": "S3_ACCESS"
+      },
+      {
+        "name": "S3_SECRET",
+        "valueFROM": "S3_SECRET"
+      }
+    ]
   }
 ]
