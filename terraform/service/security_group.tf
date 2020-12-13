@@ -52,17 +52,17 @@ resource "aws_security_group" "alb" {
   }
 }
 
-# resource "aws_security_group" "db" {
-#   name        = "accomplist-db"
-#   description = "db of accomplist"
-#   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+resource "aws_security_group" "db" {
+  name        = "accomplist-db"
+  description = "db of accomplist"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
-#   ingress {
-#     from_port = 5432
-#     to_port   = 5432
-#     protocol  = "tcp"
-#     security_groups = [
-#       aws_security_group.instance.id,
-#     ]
-#   }
-# }
+  ingress {
+    from_port = 5432
+    to_port   = 5432
+    protocol  = "tcp"
+    security_groups = [
+      aws_security_group.instance.id,
+    ]
+  }
+}

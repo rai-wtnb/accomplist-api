@@ -1,14 +1,14 @@
 package s3
 
 import (
-	"os"
-	"log"
-	"fmt"
-	"time"
-	"errors"
 	"bytes"
 	"crypto/sha1"
+	"errors"
+	"fmt"
+	"log"
+	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -56,14 +56,13 @@ func uploader() *s3manager.Uploader {
 	return s3manager.NewUploader(session.Must(session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{
 			Credentials: credentials.NewStaticCredentialsFromCreds(credentials.Value{
-				AccessKeyID:     os.Getenv("AWS_ACCESS"),
-				SecretAccessKey: os.Getenv("AWS_SECRET"),
+				AccessKeyID:     os.Getenv("S3_ACCESS"),
+				SecretAccessKey: os.Getenv("S3_SECRET"),
 			}),
 			Region: aws.String("ap-northeast-1"),
 		},
 	})))
 }
-
 
 // getContentType judges file file type.
 func getContentType(extension string) string {

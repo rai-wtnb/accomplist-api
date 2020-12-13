@@ -49,6 +49,29 @@ jobs:
           command: |
             docker push ${ECR_DOMAIN}:$CIRCLE_SHA1
             docker push ${ECR_DOMAIN}:latest
+  deploy:
+    executor: go-1-13-5
+    steps:
+      - run:
+          name: install awscli
+          command: |
+            apk add --no-cache --update py-pip
+            pip install awscli
+      - run:
+          name: install jq
+          command: |
+            wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+            mv jq-linux64 jq
+      - run:
+          name: login
+          command: |
+            $(aws ecr get-login --no-include-email --region ap-northeast-1)
+      - run:
+          name: deploy
+          command: |
+            aws ecs describe-task-definition --task-definition accomplist-task | jq '.taskDefinition | { containerDefinitions: .containerDefinitions }' > definition.json
+            aws ecs register-task-definition --family accomplist-task --cli-input-json file://definition.json
+            aws ecs update-service --cluster accomplist-ecs-cluster --service accomplist-api --task-definition accomplist-task
 
 
 workflows:
@@ -62,5 +85,12 @@ workflows:
             - build
           filters:
               branches:
+                only:
+                  - main
+      - deploy:
+          requires:
+            - build_image
+          filters:
+            branches:
                 only:
                   - main
