@@ -22,7 +22,10 @@
         "ecs:UpdateService",
         "ecs:RunTask",
         "ecs:DescribeTasks",
-        "ecs:ListTasks"
+        "ecs:ListTasks",
+        "iam:Get*",
+        "iam:List*",
+        "iam:PassRole"
       ],
       "Resource": "*"
     }

@@ -70,7 +70,7 @@ jobs:
           name: deploy
           command: |
             aws ecs describe-task-definition --task-definition accomplist-task | jq '.taskDefinition | { containerDefinitions: .containerDefinitions }' > definition.json
-            aws ecs register-task-definition --family accomplist-task --cli-input-json file://definition.json
+            aws ecs register-task-definition --exection-role-arn arn:aws:iam::327222865572:role/ecs-task-role --family accomplist-task --cli-input-json file://definition.json
             aws ecs update-service --cluster accomplist-ecs-cluster --service accomplist-api --task-definition accomplist-task
 
 
