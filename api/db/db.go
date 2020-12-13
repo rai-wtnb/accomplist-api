@@ -1,6 +1,9 @@
 package db
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/rai-wtnb/accomplist-api/models"
@@ -13,7 +16,11 @@ var (
 
 // Init makes connection to psql.
 func Init() {
-	db, err = gorm.Open("postgres", "host=db port=5432 user=accomplist dbname=accomplist password=accomplist-password sslmode=disable")
+	db, err = gorm.Open("postgres", fmt.Sprintf(
+		"host=%s port=5432 user=accomplist dbname=accomplist password=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PASS"),
+	))
 	if err != nil {
 		panic(err)
 	}

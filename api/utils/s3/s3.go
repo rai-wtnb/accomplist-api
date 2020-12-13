@@ -10,7 +10,6 @@ import (
 	"crypto/sha1"
 	"path/filepath"
 
-	"github.com/joho/godotenv"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -18,8 +17,6 @@ import (
 )
 
 func Upload(file []byte, fileName string) (string, error) {
-	loadEnv()
-
 	fileUrl, err := sendToS3(file, fileName)
 	if err != nil {
 		return fileUrl, err
@@ -42,7 +39,7 @@ func sendToS3(file []byte, fileName string) (string, error) {
 
 	_, err := uploader.Upload(&s3manager.UploadInput{
 		Body:        bytes.NewReader(file),
-		Bucket:      aws.String(os.Getenv("AWS_BUCKET")),
+		Bucket:      aws.String("accomplist-bucket"),
 		ContentType: aws.String(contentType),
 		Key:         aws.String(key),
 	})
@@ -50,17 +47,9 @@ func sendToS3(file []byte, fileName string) (string, error) {
 		return "", err
 	}
 
-	fileURL := fmt.Sprintf("https://s3-%s.amazonaws.com/%s/%s", os.Getenv("AWS_REGION"), os.Getenv("AWS_BUCKET"), key)
+	fileURL := fmt.Sprintf("https://s3-ap-northeast-1.amazonaws.com/accomplist-bucket/%s", key)
 
 	return fileURL, nil
-}
-
-// loadEnv prepare to use env.
-func loadEnv() {
-	err := godotenv.Load()
-    if err != nil {
-        log.Fatal("Error: failed to load .env file")
-    }
 }
 
 func uploader() *s3manager.Uploader {
@@ -70,7 +59,7 @@ func uploader() *s3manager.Uploader {
 				AccessKeyID:     os.Getenv("AWS_ACCESS"),
 				SecretAccessKey: os.Getenv("AWS_SECRET"),
 			}),
-			Region: aws.String(os.Getenv("AWS_REGION")),
+			Region: aws.String("ap-northeast-1"),
 		},
 	})))
 }
