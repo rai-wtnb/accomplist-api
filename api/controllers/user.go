@@ -148,6 +148,7 @@ func (UserController) UpdateImg(c *gin.Context) {
 		_, err := io.Copy(buf, img)
 		url, err := s3.Upload(buf.Bytes(), header.Filename)
 		if err != nil {
+			log.Println()
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 
