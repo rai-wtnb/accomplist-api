@@ -16,12 +16,14 @@ var (
 
 // Init makes connection to psql.
 func Init() {
-	db, err = gorm.Open("postgres", fmt.Sprintf(
+	connection := fmt.Sprintf(
 		"host=%s port=5432 user=accomplist dbname=accomplist password=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PASS"),
-	))
+	)
+	db, err = gorm.Open("postgre", connection)
 	if err != nil {
+		fmt.Println(os.Getenv("DB_HOST"))
 		panic(err)
 	}
 
