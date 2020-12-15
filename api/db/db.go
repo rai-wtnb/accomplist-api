@@ -21,7 +21,7 @@ func Init() {
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PASS"),
 	)
-	db, err = gorm.Open("postgre", connection)
+	db, err = gorm.Open("postgres", connection)
 	if err != nil {
 		fmt.Println(os.Getenv("DB_HOST"))
 		panic(err)
