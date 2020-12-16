@@ -1,6 +1,7 @@
 resource "aws_instance" "accomplist" {
   ami                         = "ami-0e37e42dff65024ae"
   instance_type               = "t2.small"
+  key_name                    = aws_key_pair.accomplist_ec2_key_pair.key_name
   monitoring                  = true
   iam_instance_profile        = data.terraform_remote_state.aws_iam.outputs.ecs_instance_profile_name
   subnet_id                   = data.terraform_remote_state.vpc.outputs.public_subnet_1_id
@@ -16,5 +17,14 @@ resource "aws_instance" "accomplist" {
 
   tags = {
     "Name" = "accomplist-ec2"
+  }
+}
+
+resource "aws_key_pair" "accomplist_ec2_key_pair" {
+  key_name = var.aws_key_name
+  public_key = file(var.public_key_path)
+
+  tags = {
+    Name  = "accomplist-instance-key-pair"
   }
 }
