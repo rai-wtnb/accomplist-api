@@ -1,6 +1,8 @@
 variable "prefix" {
   default = "accomplist"
 }
+variable aws_key_name {}
+variable public_key_path {}
 
 terraform {
   backend "s3" {
