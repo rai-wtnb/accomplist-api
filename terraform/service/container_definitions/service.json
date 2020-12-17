@@ -1,7 +1,7 @@
 [
   {
     "name": "accomplist-api",
-    "image": "327222865572.dkr.ecr.ap-northeast-1.amazonaws.com/accomplist-ecr:36d1a82684c8f8b24ee8322f46878287a52bef9c",
+    "image": "327222865572.dkr.ecr.ap-northeast-1.amazonaws.com/accomplist-ecr:latest",
     "cpu": 333,
     "memoryReservation": 600,
     "essential": true,
@@ -9,7 +9,7 @@
       {
         "hostPort": 0,
         "protocol": "tcp",
-        "containerPort": 4567
+        "containerPort": 8080
       }
     ],
     "command": [
@@ -23,8 +23,13 @@
         "awslogs-stream-prefix": "accomplist"
       }
     },
-    "environment": [],
-    "secret": [
+    "environment": [
+      {
+        "name": "GIN_MODE",
+        "value": "release"
+      }
+    ],
+    "secrets": [
       {
         "name": "DB_HOST",
         "valueFROM": "DB_HOST"
