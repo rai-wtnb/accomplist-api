@@ -7,6 +7,6 @@ resource "aws_ecs_service" "accomplist-api" {
   load_balancer {
     target_group_arn = aws_lb_target_group.http.arn
     container_name   = "accomplist-api"
-    container_port   = "4567"
+    container_port   = "8080"
   }
 }
