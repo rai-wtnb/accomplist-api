@@ -21,6 +21,8 @@ func router() *gin.Engine {
 	config.AllowOrigins = []string{
 		"http://localhost:3000",
 		"https://accomplist.work",
+		"https://accomplist-git-master.rai-wtnb.vercel.app/",
+		"https://accomplist.rai-wtnb.vercel.app/",
 	}
 	r.Use(cors.New(config))
 
