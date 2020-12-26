@@ -13,16 +13,16 @@ resource "aws_security_group" "instance" {
   }
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -38,15 +38,6 @@ resource "aws_security_group" "alb" {
   name        = "accomplist-alb"
   description = "http and https"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
-
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "TCP"
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
 
   ingress {
     from_port = 443
