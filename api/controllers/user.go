@@ -141,6 +141,7 @@ func (UserController) UpdateImg(c *gin.Context) {
 
 	img, header, err := c.Request.FormFile("img")
 	if err != nil {
+		log.Println(img)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		// upload to s3
@@ -148,7 +149,8 @@ func (UserController) UpdateImg(c *gin.Context) {
 		_, err := io.Copy(buf, img)
 		url, err := s3.Upload(buf.Bytes(), header.Filename)
 		if err != nil {
-			log.Println()
+			log.Println(err)
+			log.Println(url)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 

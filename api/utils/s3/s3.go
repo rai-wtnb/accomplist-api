@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -28,7 +27,6 @@ func sendToS3(file []byte, fileName string) (string, error) {
 	extension := filepath.Ext(fileName)
 	contentType := getContentType(extension)
 	if contentType == "" {
-		log.Println("contentType: ", contentType)
 		return "", errors.New("Unknown content type")
 	}
 
