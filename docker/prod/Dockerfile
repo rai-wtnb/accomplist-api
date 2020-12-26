@@ -9,6 +9,7 @@ ARG CGO_ENABLED=0
 ARG GOOS=linux
 ARG GOARCH=amd64
 
+RUN apk update && apk add --no-cache ca-certificates && update-ca-certificates
 RUN cd ./api && go build \
   -o /go/bin/main \
   -ldflags '-s -w'
@@ -16,6 +17,7 @@ RUN cd ./api && go build \
 
 FROM scratch as runner
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/bin/main /app/main
 
 ENTRYPOINT ["/app/main"]
