@@ -9,7 +9,7 @@ ARG CGO_ENABLED=0
 ARG GOOS=linux
 ARG GOARCH=amd64
 
-RUN apt-get update && apt-get install --no-cache ca-certificates && update-ca-certificates
+RUN apt-get update && apt-get install ca-certificates && update-ca-certificates
 RUN cd ./api && go build \
   -o /go/bin/main \
   -ldflags '-s -w'
