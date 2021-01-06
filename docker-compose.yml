@@ -9,6 +9,9 @@ services:
       - '8080:8080'
     networks:
       - accomplist_link
+    environment:
+      DB_HOST: db
+      DB_PASS: accomplist-password
     depends_on:
       - db
 
