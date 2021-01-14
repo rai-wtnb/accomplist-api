@@ -26,10 +26,10 @@ func (FeedbackRepository) CreateFeedback(feedbackAndSession models.FeedbackAndSe
 	var feedback Feedback
 	if err := db.Create(
 		&Feedback{
-			UserID:  feedbackAndSession.UserID,
-			ListID:  feedbackAndSession.ListID,
-			Title:   feedbackAndSession.Title,
-			Body:    feedbackAndSession.Body,
+			UserID: feedbackAndSession.UserID,
+			ListID: feedbackAndSession.ListID,
+			Title:  feedbackAndSession.Title,
+			Body:   feedbackAndSession.Body,
 		}).Error; err != nil {
 		return feedback, err
 	}
