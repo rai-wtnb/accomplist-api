@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/rai-wtnb/accomplist-api/db"
@@ -27,6 +29,7 @@ func (UserRepository) CreateUser(c *gin.Context) (User, error) {
 	db := db.GetDB()
 	var user User
 	if err := c.BindJSON(&user); err != nil {
+		log.Println(err)
 		return user, err
 	}
 	encryptedPassword := crypto.PasswordEncrypt(user.Password)
