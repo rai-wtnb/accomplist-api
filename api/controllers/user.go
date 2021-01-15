@@ -61,11 +61,13 @@ func (UserController) Login(c *gin.Context) {
 
 // Logout : POST /users/logout
 func (UserController) Logout(c *gin.Context) {
-	// TODO
-	// var u repository.UserRepository
-	// user, err := u.GetByID(id)
-	// u.DeleteSession()
-	c.String(http.StatusOK, "ログアウト完了")
+	var u repository.UserRepository
+	id := c.PostForm("id")
+	if err := u.DeleteSession(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"logout error": err.Error()})
+	} else {
+		c.String(204, "ログアウト完了")
+	}
 }
 
 // Index : GET /users
@@ -73,7 +75,6 @@ func (UserController) Index(c *gin.Context) {
 	var u repository.UserRepository
 	r, err := u.GetAll()
 	if err != nil {
-		c.AbortWithStatus(404)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(200, r)
