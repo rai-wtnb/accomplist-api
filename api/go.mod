@@ -3,7 +3,6 @@ module github.com/rai-wtnb/accomplist-api
 go 1.15
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/aws/aws-sdk-go v1.35.35
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
