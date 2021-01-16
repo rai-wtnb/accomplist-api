@@ -20,37 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var userA = models.User{
-	ID:          "id_a",
-	Name:        "name_a",
-	Email:       "email@aaa.com",
-	Password:    "pass_a",
-	Twitter:     "twitter_a",
-	Description: "description_a",
-	Img:         "img_a",
-}
-
-var userB = models.User{
-	ID:          "id_b",
-	Name:        "name_b",
-	Email:       "email@bbb.com",
-	Password:    "pass_b",
-	Twitter:     "twitter_b",
-	Description: "description_b",
-	Img:         "img_b",
-}
-
-var userC = models.User{
-	ID:          "id_c",
-	Name:        "name_c",
-	Email:       "email@ccc.com",
-	Password:    "pass_c",
-	Twitter:     "twitter_c",
-	Description: "description_c",
-	Img:         "img_c",
-}
-
-var ctrl = UserController{}
+var userCtrl = UserController{}
 
 func TestMain(m *testing.M) {
 	// before all
@@ -64,17 +34,24 @@ func TestMain(m *testing.M) {
 	testDb.Create(&userA)
 	testDb.Create(&userB)
 
+	testDb.Create(&listA)
+	testDb.Create(&listB)
+
 	code := m.Run()
 
 	// after all
-	testDb.Exec("DELETE FROM users WHERE id = ? OR id = ? OR id = ?", userA.ID, userB.ID, userC.ID)
+	testDb.Exec("DELETE FROM users WHERE id = ? OR id = ? OR id = ?",
+		userA.ID, userB.ID, userC.ID)
+	testDb.Exec("DELeTE FROM lists WHERE content = ? or content = ? or content = ?",
+		listA.Content, listB.Content, listC.Content)
+
 	os.Exit(code)
 }
 
-func TestSignup(t *testing.T) {
+func TestUserSignup(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.POST("/signup", ctrl.Signup)
+	r.POST("/signup", userCtrl.Signup)
 
 	postC := fmt.Sprintf(`{"ID":"%v","Name":"%v","Email":"%v","Password":"%v"}`,
 		userC.ID,
@@ -87,7 +64,7 @@ func TestSignup(t *testing.T) {
 
 	testDb := db.Db
 	var resultC models.User
-	testDb.Where("id = ?", "id_c").First(&resultC)
+	testDb.Where("id = ?", userC.ID).First(&resultC)
 
 	assert.Equal(t, 201, w.Code, "invalid StatusCode")
 	assert.Equal(t, userC.ID, resultC.ID, "invalid DB data: ID")
@@ -96,21 +73,21 @@ func TestSignup(t *testing.T) {
 	}
 }
 
-func TestLogin(t *testing.T) {
+func TestUserLogin(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.POST("/login", ctrl.Login)
+	r.POST("/login", userCtrl.Login)
 
 	loginA := fmt.Sprintf("email=%v;password=%v", userA.Email, "pass_a")
 	req, _ := http.NewRequest("POST", "/login", strings.NewReader(loginA))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;")
 	r.ServeHTTP(w, req)
-	resp := w.Result()
 
 	testDb := db.Db
 	var dbA models.User
 	testDb.Where("id = ?", "id_a").First(&dbA)
 
+	resp := w.Result()
 	respBodyByte, _ := ioutil.ReadAll(resp.Body)
 	result := gin.H{}
 	json.Unmarshal(respBodyByte, &result)
@@ -120,10 +97,10 @@ func TestLogin(t *testing.T) {
 	assert.Equal(t, dbA.ID, result["userID"], "invalid userID")
 }
 
-func TestLogout(t *testing.T) {
+func TestUserLogout(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.POST("/logout", ctrl.Logout)
+	r.POST("/logout", userCtrl.Logout)
 
 	// login
 	var u repository.UserRepository
@@ -142,10 +119,10 @@ func TestLogout(t *testing.T) {
 	assert.Equal(t, "", resultA.SessionID, "Couldn't delete sessionID")
 }
 
-func TestIndex(t *testing.T) {
+func TestUserIndex(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.GET("/users", ctrl.Index)
+	r.GET("/users", userCtrl.Index)
 
 	req, _ := http.NewRequest("GET", "/users", nil)
 	r.ServeHTTP(w, req)
@@ -157,10 +134,10 @@ func TestIndex(t *testing.T) {
 
 	var resultA, resultB models.User
 	for _, user := range users {
-		if user.ID == "id_a" {
+		if user.ID == userA.ID {
 			resultA = user
 		}
-		if user.ID == "id_b" {
+		if user.ID == userB.ID {
 			resultB = user
 		}
 	}
@@ -172,10 +149,10 @@ func TestIndex(t *testing.T) {
 	assert.Equal(t, userB.Description, resultB.Description, "invalid res data: Description of B")
 }
 
-func TestShow(t *testing.T) {
+func TestUserShow(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.GET("/users/:id", ctrl.Show)
+	r.GET("/users/:id", userCtrl.Show)
 
 	req, _ := http.NewRequest("GET", "/users/id_a", nil)
 	r.ServeHTTP(w, req)
@@ -190,10 +167,10 @@ func TestShow(t *testing.T) {
 	assert.Equal(t, userA.Description, resultA.Description, "invalid res data: Description")
 }
 
-func TestUpdate(t *testing.T) {
+func TestUserUpdate(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.PUT("/users/:id", ctrl.Update)
+	r.PUT("/users/:id", userCtrl.Update)
 
 	// login
 	sessionID := mysession.NewSessionID()
@@ -216,7 +193,7 @@ func TestUpdate(t *testing.T) {
 
 	testDb := db.Db
 	var dbA models.User
-	testDb.Where("id = ?", "id_a").First(&dbA)
+	testDb.Where("id = ?", userA.ID).First(&dbA)
 
 	assert.Equal(t, 200, w.Code, "invalid StatusCode")
 	assert.Equal(t, updateName, dbA.Name, "invalid res data Name")
@@ -224,10 +201,10 @@ func TestUpdate(t *testing.T) {
 	assert.Equal(t, updateDescription, dbA.Description, "invalid res data Description")
 }
 
-func TestDelete(t *testing.T) {
+func TestUserDelete(t *testing.T) {
 	w := httptest.NewRecorder()
 	_, r := gin.CreateTestContext(w)
-	r.DELETE("/users/:id", ctrl.Delete)
+	r.DELETE("/users/:id", userCtrl.Delete)
 
 	req, _ := http.NewRequest("DELETE", "/users/id_a", nil)
 	r.ServeHTTP(w, req)
@@ -236,6 +213,6 @@ func TestDelete(t *testing.T) {
 	var dbA models.User
 	testDb.Where("id = ?", "id_a").First(&dbA)
 
-	assert.Equal(t, 204, w.Code, "invalidd SatusCode")
-	assert.Equal(t, "", dbA.ID, "failed to delete")
+	assert.Equal(t, 204, w.Code, "invalid StausCode")
+	assert.Empty(t, dbA.ID, "failed to delete")
 }
