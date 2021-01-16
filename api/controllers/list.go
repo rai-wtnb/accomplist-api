@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func (ListController) Create(c *gin.Context) {
 
 	r, err := l.CreateList(c)
 	if err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -70,6 +72,7 @@ func (ListController) Update(c *gin.Context) {
 
 	r, err := l.UpdateByID(id, c)
 	if err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -83,9 +86,10 @@ func (ListController) Delete(c *gin.Context) {
 	var l repository.ListRepository
 
 	if err := l.DeleteByID(id); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"success": "deleted the list"})
+	c.JSON(204, gin.H{"success": "deleted the list"})
 }
