@@ -30,7 +30,7 @@ jobs:
       - run: go version
       - run: cd ./api && go test -v -cover -coverprofile=coverage.out ./...
       - codecov/upload:
-          file: ./coverage.out
+          file: ./api/coverage.out
   build:
     executor: go-1-13-5
     steps:
