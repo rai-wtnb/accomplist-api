@@ -23,8 +23,6 @@ func router() *gin.Engine {
 	}
 	r.Use(cors.New(config))
 
-	r.GET("/ids", controllers.IndexID)
-
 	u := r.Group("/users")
 	{
 		ctrl := controllers.UserController{}

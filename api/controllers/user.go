@@ -23,78 +23,71 @@ func (UserController) Signup(c *gin.Context) {
 	r, err := u.CreateUser(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		sessionID := mysession.NewSessionID()
-		u.SaveSession(r.ID, sessionID)
-		c.JSON(201, gin.H{
-			"sessionID": sessionID,
-			"userID":    r.ID,
-		})
+		return
 	}
+
+	sessionID := mysession.NewSessionID()
+	u.SaveSession(r.ID, sessionID)
+
+	c.JSON(201, gin.H{
+		"sessionID": sessionID,
+		"userID":    r.ID,
+	})
+
 }
 
 // Login : POST /users/login
 func (UserController) Login(c *gin.Context) {
 	var u repository.UserRepository
 	var err error
+
 	user, err := u.GetByEmail(c.PostForm("email"))
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	dbPassword := user.Password
 	formPassword := c.PostForm("password")
 
-	if err := crypto.Verify(dbPassword, formPassword); err != nil {
+	if err = crypto.Verify(dbPassword, formPassword); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		sessionID := mysession.NewSessionID()
-		u.SaveSession(user.ID, sessionID)
-		c.JSON(200, gin.H{
-			"sessionID": sessionID,
-			"userID":    user.ID,
-		})
+		return
 	}
+
+	sessionID := mysession.NewSessionID()
+	u.SaveSession(user.ID, sessionID)
+	c.JSON(200, gin.H{
+		"sessionID": sessionID,
+		"userID":    user.ID,
+	})
 }
 
 // Logout : POST /users/logout
 func (UserController) Logout(c *gin.Context) {
 	var u repository.UserRepository
 	id := c.PostForm("id")
+
 	if err := u.DeleteSession(id); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"logout error": err.Error()})
-	} else {
-		c.String(204, "ログアウト完了")
+		return
 	}
+	c.String(204, "succeeded to logout")
 }
 
 // Index : GET /users
 func (UserController) Index(c *gin.Context) {
 	var u repository.UserRepository
-	r, err := u.GetAll()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(200, r)
-	}
-}
 
-// IndexID : GET /users/ids
-func IndexID(c *gin.Context) {
-	var u repository.UserRepository
 	r, err := u.GetAll()
-	ids := make([]string, 0)
-	for _, s := range r {
-		ids = append(ids, s.ID)
-	}
 	if err != nil {
-		c.AbortWithStatus(404)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(200, ids)
+		return
 	}
+	c.JSON(200, r)
 }
 
 // Show : GET /users/:id
@@ -103,77 +96,87 @@ func (UserController) Show(c *gin.Context) {
 	var u repository.UserRepository
 	user, err := u.GetByID(id)
 	if err != nil {
-		c.AbortWithStatus(400)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(200, user)
+		return
 	}
+	c.JSON(200, user)
 }
 
 // Update : PUT /users/:id
 func (UserController) Update(c *gin.Context) {
 	var u repository.UserRepository
 	var userAndSession models.UserAndSession
+	var err error
 
-	if err := c.BindJSON(&userAndSession); err != nil {
+	if err = c.BindJSON(&userAndSession); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		id := c.Params.ByName("id")
-		dbSessionID, _ := u.GetSession(id)
-
-		// validation
-		if dbSessionID == userAndSession.SessionID {
-			if r, err := u.UpdateByID(id, userAndSession); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			} else {
-				c.JSON(200, r)
-			}
-		} else {
-			log.Println("wrong sessionID")
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		}
+		return
 	}
+
+	id := c.Params.ByName("id")
+	dbSessionID, _ := u.GetSession(id)
+
+	// validation
+	if userAndSession.SessionID == "" || dbSessionID != userAndSession.SessionID {
+		log.Println("wrong sessionID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong sessionID"})
+		return
+	}
+
+	r, err := u.UpdateByID(id, userAndSession)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, r)
 }
 
 // UpdateImg : PUT /users/:id/img
 func (UserController) UpdateImg(c *gin.Context) {
 	var u repository.UserRepository
 	id := c.Params.ByName("id")
+	var err error
 
 	img, header, err := c.Request.FormFile("img")
 	if err != nil {
 		log.Println(img)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		// upload to s3
-		buf := bytes.NewBuffer(nil)
-		_, err := io.Copy(buf, img)
-		url, err := s3.Upload(buf.Bytes(), header.Filename)
-		if err != nil {
-			log.Println(err)
-			log.Println(url)
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		}
-
-		// save url in db
-		_, err = u.SaveUrlByID(id, url)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		}
-		c.JSON(200, err)
+		return
 	}
+
+	// upload to s3
+	buf := bytes.NewBuffer(nil)
+	_, err = io.Copy(buf, img)
+	url, err := s3.Upload(buf.Bytes(), header.Filename)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// save url in db
+	_, err = u.SaveUrlByID(id, url)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, err)
 }
 
 // Delete : DELETE /users/:id
 func (UserController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var u repository.UserRepository
+
 	err := u.DeleteByID(id)
 	if err != nil {
-		c.AbortWithStatus(403)
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"success": "ユーザーを削除しました"})
-	return
+
+	c.JSON(204, gin.H{"success": "deleted the user"})
 }
