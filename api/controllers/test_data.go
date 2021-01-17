@@ -1,6 +1,8 @@
 package controllers
 
-import "github.com/rai-wtnb/accomplist-api/models"
+import (
+	"github.com/rai-wtnb/accomplist-api/models"
+)
 
 var userA = models.User{
 	ID:          "id_a",
@@ -35,11 +37,13 @@ var userC = models.User{
 var listA = models.List{
 	UserID:  "id_a",
 	Content: "list_a",
+	Done:    true,
 }
 
 var listB = models.List{
 	UserID:  "id_a",
 	Content: "list_b",
+	Done:    true,
 }
 
 var listC = models.List{
@@ -51,14 +55,22 @@ var listC = models.List{
 var feedbackA = models.Feedback{
 	UserID:  "id_a",
 	ImgPath: "img_a",
-	Title:   "feedback_a",
-	Body:    "feedback_a",
+	Title:   "title_a",
+	Body:    "body_a",
 }
 
 // feedback of listB
 var feedbackB = models.Feedback{
 	UserID:  "id_a",
 	ImgPath: "img_b",
-	Title:   "feedback_b",
-	Body:    "feedback_b",
+	Title:   "title_b",
+	Body:    "body_b",
+}
+
+// feedback of listC
+var feedbackC = models.Feedback{
+	UserID:  "id_a",
+	ImgPath: "img_c",
+	Title:   "title_c",
+	Body:    "body_c",
 }

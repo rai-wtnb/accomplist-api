@@ -106,10 +106,7 @@ func TestListShow(t *testing.T) {
 	_, r := gin.CreateTestContext(w)
 	r.GET("/lists/specific/:id", listCtrl.Show)
 
-	testDb := db.Db
-	var dbA models.List
-	testDb.Where("content = ?", listA.Content).First(&dbA)
-	url := fmt.Sprintf("/lists/specific/%v", dbA.ID)
+	url := fmt.Sprintf("/lists/specific/%v", listA.ID)
 	req, _ := http.NewRequest("GET", url, nil)
 	r.ServeHTTP(w, req)
 
@@ -119,7 +116,7 @@ func TestListShow(t *testing.T) {
 	json.Unmarshal(respBodyByte, &resultA)
 
 	assert.Equal(t, 200, w.Code, "invalid StatusCode")
-	assert.Equal(t, dbA.ID, resultA.ID, "invalid res data")
+	assert.Equal(t, listA.ID, resultA.ID, "invalid res data")
 }
 
 func TestListUpdate(t *testing.T) {
@@ -127,12 +124,9 @@ func TestListUpdate(t *testing.T) {
 	_, r := gin.CreateTestContext(w)
 	r.GET("/lists/specific/:id", listCtrl.Update)
 
-	testDb := db.Db
-	var dbA models.List
-	testDb.Where("content = ?", listA.Content).First(&dbA)
-	url := fmt.Sprintf("/lists/specific/%v", dbA.ID)
+	url := fmt.Sprintf("/lists/specific/%v", listA.ID)
 	updateContent := "content_a_update"
-	updateDone := true
+	updateDone := false
 	putA := fmt.Sprintf(`{"UserID":"%v","Content":"%v","Done":%t}`,
 		listA.UserID,
 		updateContent,
@@ -157,16 +151,13 @@ func TestListDelete(t *testing.T) {
 	_, r := gin.CreateTestContext(w)
 	r.DELETE("/lists/specific/:id", listCtrl.Delete)
 
-	testDb := db.Db
-	var dbA models.List
-	testDb.Where("content = ?", listA.Content).First(&dbA)
-	url := fmt.Sprintf("/lists/specific/%v", dbA.ID)
+	url := fmt.Sprintf("/lists/specific/%v", listA.ID)
 	req, _ := http.NewRequest("DELETE", url, nil)
 	r.ServeHTTP(w, req)
 
 	resultDb := db.Db
 	var resultA models.List
-	resultDb.Where("id = ?", dbA.ID).First(&resultA)
+	resultDb.Where("id = ?", listA.ID).First(&resultA)
 
 	assert.Equal(t, 204, w.Code, "invalid StatusCode")
 	assert.Empty(t, resultA.Content, "failed to delete")
