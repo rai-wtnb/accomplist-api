@@ -65,6 +65,7 @@ func (FeedbackController) Show(c *gin.Context) {
 	feedback, err := f.GetByListID(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, feedback)
@@ -144,5 +145,5 @@ func (FeedbackController) Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"success": "deleted the feedback"})
+	c.JSON(204, gin.H{"success": "deleted the feedback"})
 }

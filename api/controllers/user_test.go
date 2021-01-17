@@ -37,13 +37,24 @@ func TestMain(m *testing.M) {
 	testDb.Create(&listA)
 	testDb.Create(&listB)
 
+	testDb.Where("content = ?", listA.Content).First(&listA)
+	testDb.Where("content = ?", listB.Content).First(&listB)
+	feedbackA.ListID = listA.ID
+	feedbackB.ListID = listB.ID
+	testDb.Create(&feedbackA)
+	testDb.Create(&feedbackB)
+
+	testDb.Where("title = ?", feedbackA.Title).First(&feedbackA)
+
 	code := m.Run()
 
 	// after all
 	testDb.Exec("DELETE FROM users WHERE id = ? OR id = ? OR id = ?",
 		userA.ID, userB.ID, userC.ID)
-	testDb.Exec("DELeTE FROM lists WHERE content = ? or content = ? or content = ?",
+	testDb.Exec("DELETE FROM lists WHERE content = ? or content = ? or content = ?",
 		listA.Content, listB.Content, listC.Content)
+	testDb.Exec("DELETE FROM feedbacks WHERE title = ? or title = ? or title = ?",
+		feedbackA.Title, feedbackB.Title, feedbackC.Title)
 
 	os.Exit(code)
 }
@@ -211,7 +222,7 @@ func TestUserDelete(t *testing.T) {
 
 	testDb := db.Db
 	var dbA models.User
-	testDb.Where("id = ?", "id_a").First(&dbA)
+	testDb.Where("id = ?", userA.ID).First(&dbA)
 
 	assert.Equal(t, 204, w.Code, "invalid StausCode")
 	assert.Empty(t, dbA.ID, "failed to delete")
