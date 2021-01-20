@@ -45,6 +45,7 @@ func Close() {
 func autoMigration() {
 	Db.AutoMigrate(&models.User{})
 	Db.AutoMigrate(&models.List{})
-	Db.AutoMigrate(&models.Like{})
 	Db.AutoMigrate(&models.Feedback{})
+	Db.AutoMigrate(&models.Relation{})
+	Db.AutoMigrate(&models.Like{})
 }

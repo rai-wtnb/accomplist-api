@@ -11,7 +11,7 @@ type ListRepository struct{}
 
 type List models.List
 
-// GetAll gets all Lists. used in controllers.Index()
+// GetAll returns all Lists. used in controllers.Index()
 func (ListRepository) GetAll() ([]models.List, error) {
 	db := db.GetDB()
 	var lists []models.List
@@ -26,16 +26,19 @@ func (ListRepository) GetAll() ([]models.List, error) {
 func (ListRepository) CreateList(c *gin.Context) (List, error) {
 	db := db.GetDB()
 	var list List
-	err := c.BindJSON(&list)
+	var err error
+
+	err = c.BindJSON(&list)
 	if err != nil {
 		return list, err
 	}
-	if err := db.Create(
+	err = db.Create(
 		&List{
 			UserID:  list.UserID,
 			Content: list.Content,
 			Done:    list.Done,
-		}).Error; err != nil {
+		}).Error
+	if err != nil {
 		return list, err
 	}
 	return list, nil

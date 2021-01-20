@@ -47,7 +47,7 @@ func router() *gin.Engine {
 		l.DELETE("/specific/:id", ctrl.Delete)
 	}
 
-	f := r.Group("feedbacks")
+	f := r.Group("/feedbacks")
 	{
 		ctrl := controllers.FeedbackController{}
 		f.GET("", ctrl.Index)
@@ -56,6 +56,17 @@ func router() *gin.Engine {
 		f.PUT("/:id", ctrl.Update)
 		f.PUT("/:id/img", ctrl.UpdateImgByListID)
 		f.DELETE("/:list-id", ctrl.Delete)
+	}
+
+	rel := r.Group("/relations")
+	{
+		ctrl := controllers.RelationController{}
+		rel.GET("/follows/:id", ctrl.FollowIndex)
+		rel.GET("/followers/:id", ctrl.FollowerIndex)
+		rel.GET("/count/:id", ctrl.Count)
+		rel.POST("/isfollow", ctrl.IsFollow)
+		rel.POST("", ctrl.Create)
+		rel.DELETE("", ctrl.Delete)
 	}
 
 	return r
