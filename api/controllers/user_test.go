@@ -53,8 +53,8 @@ func TestMain(m *testing.M) {
 		userA.ID, userB.ID, userC.ID)
 	testDb.Exec("DELETE FROM lists WHERE content = ? or content = ? or content = ?",
 		listA.Content, listB.Content, listC.Content)
-	testDb.Exec("DELETE FROM feedbacks WHERE title = ? or title = ? or title = ?",
-		feedbackA.Title, feedbackB.Title, feedbackC.Title)
+	testDb.Exec("DELETE FROM feedbacks WHERE title = ? or title = ? or title = ? or title = ?",
+		feedbackA.Title, feedbackB.Title, feedbackC.Title, "title_a_update")
 
 	os.Exit(code)
 }

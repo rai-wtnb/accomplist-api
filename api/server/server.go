@@ -69,5 +69,11 @@ func router() *gin.Engine {
 		rel.DELETE("", ctrl.Delete)
 	}
 
+	research := r.Group("/research")
+	{
+		ctrl := controllers.ResearchController{}
+		research.GET("", ctrl.ResearchIndex)
+	}
+
 	return r
 }
