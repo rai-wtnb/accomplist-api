@@ -13,14 +13,14 @@ type ResearchRepository struct{}
 func (ResearchRepository) GetResearchResult(c *gin.Context) (interface{}, error) {
 	db := db.GetDB()
 	var err error
-	var users []User
+	var users []ApiUser
 	var feedbacks []Feedback
 
 	target := c.Query("target")
 	req := "%" + c.Query("req") + "%"
 
 	if target == "user" {
-		err = db.Where("id LIKE ? OR name LIKE ? OR description LIKE ?",
+		err = db.Table("users").Where("id LIKE ? OR name LIKE ? OR description LIKE ?",
 			req, req, req).Find(&users).Error
 	} else if target == "feedback" {
 		err = db.Where("title LIKE ? OR body LIKE ?",
@@ -35,7 +35,7 @@ func (ResearchRepository) GetResearchResult(c *gin.Context) (interface{}, error)
 
 	if target == "user" {
 		return users, nil
-	} else {
-		return feedbacks, nil
 	}
+
+	return feedbacks, nil
 }
