@@ -28,6 +28,13 @@ func TestMain(m *testing.M) {
 	db.Init()
 	defer db.Close()
 
+	listA.User.ID = userA.ID
+	listA.User.Name = userA.Name
+	listB.User.ID = userB.ID
+	listB.User.Name = userB.Name
+	listC.User.ID = userC.ID
+	listC.User.Name = userC.Name
+
 	testDb := db.Db
 	userA.Password = crypto.PasswordEncrypt(userA.Password)
 	userB.Password = crypto.PasswordEncrypt(userB.Password)
