@@ -55,9 +55,9 @@ func (ListRepository) GetByUserID(id string) ([]models.List, error) {
 }
 
 // GetByListID get a list. used in contorollers.Show()
-func (ListRepository) GetByListID(id string, c *gin.Context) (models.List, error) {
+func (ListRepository) GetByListID(id string, c *gin.Context) (models.ListAndFeedback, error) {
 	db := db.GetDB()
-	var list models.List
+	var list models.ListAndFeedback
 	if err := db.Where("ID = ?", id).Find(&list).Error; err != nil {
 		return list, err
 	}
