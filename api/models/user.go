@@ -19,6 +19,8 @@ type ApiUser struct {
 	Twitter     string `json:"twitter" binding:"max=20"`
 	Description string `json:"description" binding:"max=200"`
 	Img         string `json:"img"`
+	Lists       []List `json:"lists"`
+	Count       Count  `json:"Count"`
 }
 
 type UserAndSession struct {

@@ -93,12 +93,25 @@ func (UserController) Index(c *gin.Context) {
 // Show : GET /users/:id
 func (UserController) Show(c *gin.Context) {
 	id := c.Params.ByName("id")
+	var err error
 	var u repository.UserRepository
+	var l repository.ListRepository
+	var r repository.RelationRepository
+
 	user, err := u.GetByID(id)
+	lists, err := l.GetByUserID(id)
+	follows, err := r.GetFollowID(id)
+	followers, err := r.GetFollowerID(id)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	user.Lists = append(user.Lists, lists...)
+	user.Count.FollowCount = len(follows)
+	user.Count.FollowerCount = len(followers)
+
 	c.JSON(200, user)
 }
 
