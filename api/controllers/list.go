@@ -53,16 +53,26 @@ func (ListController) IndexByUserID(c *gin.Context) {
 
 // Show : GET /lists/specific/:id
 func (ListController) Show(c *gin.Context) {
+	var err error
 	var l repository.ListRepository
+	var u repository.UserRepository
+	var f repository.FeedbackRepository
+
 	id := c.Params.ByName("id")
 
-	r, err := l.GetByListID(id, c)
+	list, err := l.GetByListID(id, c)
+	userID := list.UserID
+	feedback, err := f.GetByListID(id)
+	user, err := u.GetByID(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, r)
+	list.Feedback = feedback
+	list.User = user
+
+	c.JSON(200, list)
 }
 
 // Update : PUT /lists/specific/:id

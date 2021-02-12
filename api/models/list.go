@@ -7,5 +7,6 @@ type List struct {
 	UserID   string   `gorm:"not null"  json:"user_id"`
 	Content  string   `json:"content" binding:"required,max=100"`
 	Done     bool     `json:"done" gorm:"dafault:false"`
-	Feedback Feedback `json:"-" binding:"dive"`
+	Feedback Feedback `json:"feedback" binding:"dive"`
+	User     ApiUser  `json:"user"`
 }
