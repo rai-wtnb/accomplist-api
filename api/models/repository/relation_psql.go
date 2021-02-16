@@ -45,16 +45,16 @@ func (RelationRepository) GetFollowerID(id string) ([]string, error) {
 }
 
 // GetRelationUser returns all related Users. useded in controllers.FollowIndex()
-func (RelationRepository) GetRelationUser(ids []string) ([]ApiUser, error) {
+func (RelationRepository) GetRelationUser(ids []string) ([]models.ApiUser, error) {
 	db := db.GetDB()
-	var apiUser ApiUser
-	var apiUsers []ApiUser
+	var apiUser models.ApiUser
+	var apiUsers []models.ApiUser
 	var err error
 
 	for _, id := range ids {
 		err = db.Table("users").Select("id, name, twitter, description, img").Where("id = ?", id).First(&apiUser).Error
 		apiUsers = append(apiUsers, apiUser)
-		apiUser = ApiUser{}
+		apiUser = models.ApiUser{}
 	}
 	if err != nil {
 		return nil, err

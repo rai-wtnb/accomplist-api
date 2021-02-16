@@ -10,9 +10,9 @@ type FeedbackRepository struct{}
 type Feedback models.Feedback
 
 // GetAll gets all Feedbacks. used in controllers.Index()
-func (FeedbackRepository) GetAll() ([]models.Feedback, error) {
+func (FeedbackRepository) GetAll() ([]models.FeedbackAndUser, error) {
 	db := db.GetDB()
-	var feedbacks []models.Feedback
+	var feedbacks []models.FeedbackAndUser
 	err := db.Table("feedbacks").Scan(&feedbacks).Error
 	if err != nil {
 		return nil, err

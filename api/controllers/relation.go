@@ -14,18 +14,24 @@ type RelationController struct{}
 // FollowIndex : GET /relations/follows/:id
 func (RelationController) FollowIndex(c *gin.Context) {
 	var r repository.RelationRepository
-	id := c.Params.ByName("id")
 	var err error
+	var followsAndFollowers models.FollowsAndFollowers
+	id := c.Params.ByName("id")
 
-	ids, err := r.GetFollowID(id)
-	users, err := r.GetRelationUser(ids)
+	followids, err := r.GetFollowID(id)
+	follows, err := r.GetRelationUser(followids)
+	followerids, err := r.GetFollowerID(id)
+	followers, err := r.GetRelationUser(followerids)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, users)
+	followsAndFollowers.Follows = follows
+	followsAndFollowers.Followers = followers
+
+	c.JSON(200, followsAndFollowers)
 }
 
 // FollowerIndex : GET /relations/followers/:id
