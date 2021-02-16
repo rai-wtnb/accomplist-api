@@ -13,3 +13,8 @@ type Count struct {
 type ConfirmRel struct {
 	IsFollow bool `json:"isFollow"`
 }
+
+type FollowsAndFollowers struct {
+	Follows   []ApiUser `json:"follows"`
+	Followers []ApiUser `json:"followers"`
+}

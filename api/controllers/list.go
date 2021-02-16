@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rai-wtnb/accomplist-api/models"
 	"github.com/rai-wtnb/accomplist-api/models/repository"
 )
 
@@ -54,6 +55,7 @@ func (ListController) IndexByUserID(c *gin.Context) {
 // Show : GET /lists/specific/:id
 func (ListController) Show(c *gin.Context) {
 	var err error
+	var listAndFeedback models.ListAndFeedback
 	var l repository.ListRepository
 	var u repository.UserRepository
 	var f repository.FeedbackRepository
@@ -69,10 +71,14 @@ func (ListController) Show(c *gin.Context) {
 		return
 	}
 
-	list.Feedback = feedback
-	list.User = user
+	listAndFeedback.ID = list.ID
+	listAndFeedback.UserID = list.UserID
+	listAndFeedback.Content = list.Content
+	listAndFeedback.Done = list.Done
+	listAndFeedback.Feedback = feedback
+	listAndFeedback.User = user
 
-	c.JSON(200, list)
+	c.JSON(200, listAndFeedback)
 }
 
 // Update : PUT /lists/specific/:id

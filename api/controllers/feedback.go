@@ -16,15 +16,26 @@ type FeedbackController struct{}
 
 // Index : GET /feedbacks
 func (FeedbackController) Index(c *gin.Context) {
+	var err error
 	var f repository.FeedbackRepository
+	var u repository.UserRepository
 
-	r, err := f.GetAll()
+	feedbacks, err := f.GetAll()
+	users, err := u.GetAll()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, r)
+	for i := range feedbacks {
+		for _, user := range users {
+			if feedbacks[i].UserID == user.ID {
+				feedbacks[i].User = user
+			}
+		}
+	}
+
+	c.JSON(200, feedbacks)
 }
 
 // Create : POST /feedbacks
