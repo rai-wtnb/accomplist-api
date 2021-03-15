@@ -1,3 +1,6 @@
+# 予算の関係上(RDS高過ぎ問題で..)、APIサーバーを現在停止しております。
+# 少し煩雑ですが、Terraformディレクトリの方にインフラ構成を記載しております。
+
 [![codecov](https://codecov.io/gh/rai-wtnb/accomplist-api/branch/main/graph/badge.svg?token=I3MLDYFD21)](https://codecov.io/gh/rai-wtnb/accomplist-api)
 # リンク
 [AccompList](https://accomplist.work/)
